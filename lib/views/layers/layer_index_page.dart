@@ -1,17 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/layer_controller.dart';
+import 'package:flutter_application_1/models/layer.dart';
+import 'package:flutter_application_1/models/layer_material.dart';
 import 'package:flutter_application_1/views/layers/layer_create_page.dart';
 import 'package:flutter_application_1/views/wells/well_create_page.dart';
 
 
-class IntervalIndexPage extends StatefulWidget {
+class LayerIndexPage extends StatefulWidget {
+  final Layer currentLayer;
+  final LayerController _layerController = LayerController();
+
+  LayerIndexPage({required this.currentLayer});
+
   @override
-  IntervalIndexPageState createState() => IntervalIndexPageState();
+  LayerIndexPageState createState() => LayerIndexPageState();
 }
 
-var dropdownValues = ['Галька', 'Песок', 'Чернозем', 'Глина'];
+class LayerIndexPageState extends State<LayerIndexPage> {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _materialController = TextEditingController();
+  TextEditingController _commentController = TextEditingController();
 
-class IntervalIndexPageState extends State<IntervalIndexPage> {
-  String? dropdownValue;
+  String? material;
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      material = widget.currentLayer.layerMaterial.name;
+      _nameController.text = widget.currentLayer.name;
+      _descriptionController.text = widget.currentLayer.description;
+      _commentController.text = widget.currentLayer.comment;
+    });
+
+    getLayerMaterials();
+  }
+
+  late List<LayerMaterial> _layerMaterials = [];
+
+  Future<void> getLayerMaterials() async {
+    var layerMaterials = await widget._layerController.getLayerMaterials();
+
+    setState(() {
+      _layerMaterials = layerMaterials;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,21 +60,24 @@ class IntervalIndexPageState extends State<IntervalIndexPage> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
+        children: [
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: TextField(
+                controller: _nameController,
                 decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Глубина',
-                hintText: 'Введите глубину интервала'
+                  border: OutlineInputBorder(),
+                  labelText: 'Глубина',
+                  hintText: 'Введите глубину интервала'
+                ),
               ),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(10),
             child: DropdownButton<String>(
-              value: dropdownValue,
+              value: widget.currentLayer.layerMaterial.name,
               isExpanded: true,
               style: TextStyle(
                 fontSize: 15,
@@ -55,12 +92,11 @@ class IntervalIndexPageState extends State<IntervalIndexPage> {
               hint: Container(
                 child: Text("Выберите материал"),
               ),
-              items: <String>['Галька', 'Песок', 'Чернозем', 'Глина']
-                .map<DropdownMenuItem<String>>((String value) {
+              items: _layerMaterials.map((layerMaterial) {
                 return DropdownMenuItem<String>(
-                  value: value,
+                  value: layerMaterial.name,
                   child: Text(
-                    value,
+                    layerMaterial.name,
                     style: TextStyle(fontSize: 15),
                   ),
                 );
@@ -68,30 +104,38 @@ class IntervalIndexPageState extends State<IntervalIndexPage> {
               // Step 5.
               onChanged: (String? newValue) {
                 setState(() {
-                  dropdownValue = newValue ?? "";
+                  material = newValue ?? "";
                 });
               },
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Описание',
-                hintText: 'Введите описание интервала'
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Описание',
+                  hintText: 'Введите описание интервала'
+                ),
+                keyboardType: TextInputType.multiline,
+                maxLines: 4,
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(10),
-            child: TextField(
-                obscureText: true,
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: TextField(
+                controller: _commentController,
                 decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Комментарий',
-                hintText: 'Комментарий'
+                  border: OutlineInputBorder(),
+                  labelText: 'Комментарий',
+                  hintText: 'Комментарий'
+                ),
+                keyboardType: TextInputType.multiline,
+                maxLines: 4,
               ),
             ),
           ),

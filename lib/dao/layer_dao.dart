@@ -14,11 +14,10 @@ class LayerDao {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result;
-    List<Layer> wells = [];
 
     result = await db.rawQuery("""
       SELECT 
-        ml.id, ml.description, mlm.name as layer_material_name,
+        ml.id, ml.name, ml.description, mlm.name as layer_material_name,
         ml.created_at, ml.updated_at, 
         ml.comment, ml.aquifer, ml.description, ml.drilling_stopped, ml.sample_obtained 
       FROM main_layer ml
@@ -27,10 +26,11 @@ class LayerDao {
       WHERE ml.well_id = ${wellId}
     """);
 
+    List<Layer> wells = [];
+
     for (var layerJson in result) {
       wells.add(Layer.fromDatabaseJson(layerJson));
     }
-    print("AZAZAZAZAZA: ${wells}");
 
     return wells;
   }

@@ -40,12 +40,10 @@ class Layer {
     // layer.responsible = data['responsible_id'];
     // layer.well_id = data['well_id'];
     layer.comment = data['comment'];
-    layer.aquifer = data['aquifer'];
+    layer.aquifer = data['aquifer'] == 0 ? false : true;
     layer.description = data['description'];
-    layer.drillingStopped = data['drilling_stopped'];
-    layer.sampleObtained = data['sample_obtained'];
-
-    print("ZDES:                  ${layer.name}");
+    layer.drillingStopped = data['drilling_stopped'] == 0 ? false : true;
+    layer.sampleObtained = data['sample_obtained'] == 0 ? false : true;
 
     return layer;
   }

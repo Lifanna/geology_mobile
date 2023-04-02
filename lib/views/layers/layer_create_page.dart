@@ -50,7 +50,6 @@ class LayerCreatePageState extends State<LayerCreatePage> {
     setState(() {
       _layerMaterials = layerMaterials;
     });
-
   }
 
   @override
@@ -115,7 +114,6 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                   child: Text("Выберите материал"),
                 ),
                 items: _layerMaterials.map((layerMaterial) {
-                  print("FFFFFFFFFFFFFFFFFFF: ${layerMaterial.name}");
                   return DropdownMenuItem<String>(
                     value: layerMaterial.name,
                     child: Text(

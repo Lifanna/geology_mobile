@@ -3,7 +3,6 @@ import 'package:flutter_application_1/controllers/layer_controller.dart';
 import 'package:flutter_application_1/models/layer.dart';
 import 'package:flutter_application_1/views/layers/layer_create_page.dart';
 import 'package:flutter_application_1/views/layers/layer_index_page.dart';
-import 'package:flutter_application_1/views/wells/well_create_page.dart';
 
 
 class LayerListPage extends StatefulWidget {
@@ -25,8 +24,6 @@ class LayerListPageState extends State<LayerListPage> {
 
   Future<List<Layer>> getLayers() async {
     _layers = await widget._layerController.getLayers(widget.wellID);
-
-    print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQ: ${_layers}");
 
     return _layers;
   }
@@ -59,8 +56,8 @@ class LayerListPageState extends State<LayerListPage> {
                         subtitle: Text(_layers[index].description),
                         onTap: () {
                           Navigator.push(
-                            context, MaterialPageRoute(builder: (_) => LayerListPage(
-                              wellID: _layers[index].id,
+                            context, MaterialPageRoute(builder: (_) => LayerIndexPage(
+                              currentLayer: _layers[index],
                           )));
                         },
                       )
