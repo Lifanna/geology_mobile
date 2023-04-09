@@ -11,6 +11,12 @@ class Well {
 
   late Line line;
 
+  late int x;
+
+  late int y;
+
+  late int z;
+
   late String created_at;
 
   late String updated_at;
@@ -40,13 +46,21 @@ class Well {
 
   Map<String, dynamic> toDatabaseJson(Well well) {
     var databaseJson = {
-      'id': well.id,
       'name': well.name,
       'description': well.description,
       'comment': well.comment,
       'line_id': well.line.id,
-      'created_at': well.created_at,
-      'updated_at': well.updated_at,
+      'created_at': DateTime.now().toString(),
+      'updated_at': DateTime.now().toString(),
+    };
+
+    return databaseJson;
+  }
+
+  Map<String, dynamic> toWellTaskDatabaseJson(int wellId, int taskId) {
+    var databaseJson = {
+      'task_id': taskId,
+      'well_id': wellId
     };
 
     return databaseJson;
@@ -55,11 +69,15 @@ class Well {
   factory Well.fromDatabaseJson(Map<String, dynamic> dbJson) {
     Well well = Well();
 
+    Line line = Line();
+    line.id = dbJson['line_id'];
+    line.name = dbJson['line_name'];
+
     well.id = dbJson['well_id'];
     well.name = dbJson['well_name'];
     well.description = dbJson['well_description'];
     well.comment = dbJson['comment'];
-    well.line = dbJson['line'];
+    well.line = line;
     well.created_at = dbJson['created_at'];
     well.updated_at = dbJson['updated_at'];
 

@@ -33,6 +33,13 @@ class TaskRepository implements ITaskRepository {
   }
 
   @override
+  Future<List<Task>> getSavedTasks() async {
+    List<Task> tasks =  await taskDao.getSavedTasks();
+
+    return tasks;
+  }
+
+  @override
   Future<Task?> getTaskById(int id) async {
     return await taskDao.getTaskById(id);
   }
@@ -40,5 +47,15 @@ class TaskRepository implements ITaskRepository {
   @override
   Future<List<Well>> getTaskWells(int id) async {
     return await taskDao.getTaskWells(id);
+  }
+
+  @override
+  Future<List<Task>> getAllTasksFromDb() async {
+    return await taskDao.getAllTasksFromDb();
+  }
+  
+  @override
+  Future<void> completeTask(int taskId) async {
+    return await taskDao.completeTask(taskId);
   }
 }

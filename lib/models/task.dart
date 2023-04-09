@@ -25,6 +25,15 @@ class TaskStatus {
 
     return taskStatus;
   }
+
+  Map<String, dynamic> toDatabaseJson(TaskStatus taskStatus) {
+    var databaseJson = {
+      'id': taskStatus.id,
+      'name': taskStatus.name,
+    };
+
+    return databaseJson;
+  }
 }
 
 class Task {
@@ -111,6 +120,38 @@ class Task {
     task.comment = dbJson['comment'];
     task.created_at = dbJson['created_at'];
     task.updated_at = dbJson['updated_at'];
+
+    return task;
+  }
+
+  factory Task.fromSavedDatabaseJson(Map<String, dynamic> dbJson) {
+    Task task = Task();
+
+    task.id = dbJson['id'];
+    task.short_name = dbJson['short_name'];
+    task.description = dbJson['description'];
+
+    return task;
+  }
+
+  factory Task.fromDatabaseJsonCompleted(Map<String, dynamic> dbJson) {
+    Task task = Task();
+
+    Line line = Line();
+    line.id = dbJson['line_id'];
+    line.name = dbJson['line_name'];
+
+    TaskStatus taskStatus = TaskStatus();
+    taskStatus.id = dbJson['status_id'];
+    taskStatus.name = dbJson['status_name'];
+
+    task.id = dbJson['task_id'];
+    task.short_name = dbJson['short_name'];
+    task.description = dbJson['task_description'];
+    task.line = line;
+    task.status = taskStatus;
+    task.created_at = dbJson['task_created_at'];
+    task.updated_at = dbJson['task_updated_at'];
 
     return task;
   }

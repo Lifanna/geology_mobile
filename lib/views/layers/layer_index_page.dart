@@ -3,14 +3,17 @@ import 'package:flutter_application_1/controllers/layer_controller.dart';
 import 'package:flutter_application_1/models/layer.dart';
 import 'package:flutter_application_1/models/layer_material.dart';
 import 'package:flutter_application_1/views/layers/layer_create_page.dart';
+import 'package:flutter_application_1/views/layers/layer_list_page.dart';
 import 'package:flutter_application_1/views/wells/well_create_page.dart';
 
 
 class LayerIndexPage extends StatefulWidget {
+  final int taskID;
+  final int wellID;
   final Layer currentLayer;
   final LayerController _layerController = LayerController();
 
-  LayerIndexPage({required this.currentLayer});
+  LayerIndexPage({required this.currentLayer, required this.taskID, required this.wellID});
 
   @override
   LayerIndexPageState createState() => LayerIndexPageState();
@@ -147,6 +150,16 @@ class LayerIndexPageState extends State<LayerIndexPage> {
             onPressed: () {
               // Navigator.push(
               //   context, MaterialPageRoute(builder: (_) => LayerCreatePage()));
+            },
+          ),
+          ElevatedButton(
+            child: Text('Назад'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context, MaterialPageRoute(builder: (_) => LayerListPage(taskID: widget.taskID, wellID: widget.wellID,)));
             },
           ),
         ],

@@ -8,11 +8,6 @@ import 'package:flutter_application_1/services/storage_service.dart';
 class HomeController {
   UserRepository _userRepo = UserRepository();
 
-  Future<bool> registerUser(
-      String email, String username, String password) async {
-    return await _userRepo.register(email, username, password);
-  }
-
   Future<StatusCode> loginUser(String username, String password) async {
     return await _userRepo.login(username, password);
   }

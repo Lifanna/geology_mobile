@@ -20,16 +20,6 @@ class UserRepository implements IUserRepository {
   UserRepository();
 
   @override
-  Future<bool> register(String email, String username, String password) async {
-    // TODO: implement insert
-    UserRegister userRegister =
-        UserRegister(email: email, username: username, password: password);
-    Future<bool> success = registerApi(userRegister);
-
-    return success;
-  }
-
-  @override
   Future<StatusCode> login(String username, String password) async {
     UserLogin userLogin = UserLogin(username: username, password: password);
     StatusCode statusCode = await loginApi(userLogin);

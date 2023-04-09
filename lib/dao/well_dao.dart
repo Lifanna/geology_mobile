@@ -13,25 +13,36 @@ class WellDao {
 
     var wellDatabaseJson = well.toDatabaseJson(well);
 
-    final userTable = 'main_well';
-    
-    var wellExists = await getWellById(well.id);
-
-    if (wellExists == null){
-      int lastId = await db.insert("main_well", wellDatabaseJson);
-    }
-    else {
-      await db.update("main_well", wellDatabaseJson, where: 'id = ?', whereArgs: [well.id]);
-    }
+    int lastId = await db.insert("main_well", wellDatabaseJson);
   }
 
-  Future<Well?> getWellById(int id) async {
+  Future<void> addWellByTask(Well well, int taskId) async {
+    final db = await dbProvider.database;
+
+    var wellDatabaseJson = well.toDatabaseJson(well);
+
+    int wellId = await db.insert("main_well", wellDatabaseJson);
+    var wellTaskDatabaseJson = well.toWellTaskDatabaseJson(wellId, taskId);
+
+    int lastWellTaskId = await db.insert("main_welltask", wellTaskDatabaseJson);
+  }
+
+  Future<Well?> getWellById(int wellId, int taskId) async {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result;
 
     final String wellsTable = 'main_well';
-    result = await db.query(wellsTable, where: 'id=?', whereArgs: [id]);
+    result = await db.rawQuery("""
+      SELECT well_id, mw.name as well_name, mw.description as well_description, comment, 
+      mw.line_id as line_id, ml.name as line_name, mw.created_at, mw.updated_at 
+      FROM main_well mw
+      JOIN main_welltask mwt ON 
+      mwt.well_id = mw.id
+      JOIN main_line ml ON 
+      mw.line_id = ml.id
+      WHERE mwt.task_id = ${taskId} AND mw.id = ${wellId}
+    """);
 
     Well? well;
 

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/home_controller.dart';
 import 'package:flutter_application_1/models/api_models.dart';
@@ -90,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   if (statusCode.statusCode == "200") {
                     Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => HomePage(userID: "1",)));
+                      context, MaterialPageRoute(builder: (_) => HomePage()));
                   }
                   else {
                      

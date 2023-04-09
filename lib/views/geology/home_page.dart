@@ -1,19 +1,22 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/layer_controller.dart';
+import 'package:flutter_application_1/controllers/storage_controller.dart';
 import 'package:flutter_application_1/controllers/task_controller.dart';
 import 'package:flutter_application_1/dialogs/messageBoxDialog.dart';
 import 'package:flutter_application_1/models/task.dart';
 import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:flutter_application_1/views/geology/task_page.dart';
 import 'package:flutter_application_1/views/login/login_page.dart';
+import 'package:flutter_application_1/views/syncronize/connectivity.dart';
+import 'package:flutter_application_1/views/syncronize/sync_page.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key, required this.userID});
-
-  final String? userID;
+  HomePage({super.key});
 
   final TaskController _taskController = TaskController();
   final LayerController _layerController = LayerController();
+  final StorageController _storageController = StorageController();
 
   @override
   HomePageState createState() => HomePageState();
@@ -22,10 +25,17 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   late String? _userID = "";
   late List<Task> _tasks = [];
+  Map _source = {ConnectivityResult.none: false};
+  final MyConnectivity _connectivity = MyConnectivity.instance;
 
   @override
   void initState() {
     super.initState();
+
+    _connectivity.initialise();
+    _connectivity.myStream.listen((source) {
+      setState(() => _source = source);
+    });
 
     getUserTasks();
     getLayerMaterials();
@@ -37,7 +47,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<List<Task>> getUserTasks() async {
-    _tasks = await widget._taskController.getTasks();
+    _tasks = await widget._taskController.getTasks(_source.keys.toList()[0]);
     return _tasks;
   }
 
@@ -46,7 +56,8 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> refreshTasksListView() async {
-    var tasks = await widget._taskController.getTasks();
+    var tasks = await widget._taskController.getTasks(_source.keys.toList()[0]);
+    getLayerMaterials();
     setState(() {
       _tasks = tasks;
     });
@@ -56,12 +67,53 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    String string;
+    switch (_source.keys.toList()[0]) {
+      case ConnectivityResult.mobile:
+        string = 'Mobile: Online';
+        break;
+      case ConnectivityResult.wifi:
+        string = 'WiFi: Online';
+        break;
+      case ConnectivityResult.none:
+      default:
+        string = 'Offline';
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Задания для ${widget.userID}'),
+        title: Text('${string}'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        leading: IconButton (
+          icon: Icon(Icons.remove_circle_outlined), 
+          onPressed: () { 
+            continueCallBack() => {
+              widget._storageController.clearDatabase(),
+              Navigator.of(context).pop(),
+              setState(() {
+                _tasks = [];
+              }),
+            };
+            BlurryDialog alert = BlurryDialog("Внимание!", "После подтверждения данного действия, " +
+            "база данных очистится и добавленные данные невозможно будет вернуть!"+
+            "\n\nВы действительно хотите очистить базу?", continueCallBack);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return alert;
+              },
+            );
+          },
+        ),
         actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.sync_alt, color: Colors.white),
+            onPressed: (){
+              Navigator.push(
+                context, MaterialPageRoute(builder: (_) => SyncPage(title: "Синхронизация")));
+            }
+          ),
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: (){
@@ -70,8 +122,6 @@ class HomePageState extends State<HomePage> {
               Navigator.push(
                 context, MaterialPageRoute(builder: (_) => LoginPage(title: "Авторизация")));
             }
-            // child: new Text( 'Logout', style: new TextStyle(fontSize: 17.0, color: Colors.white
-            // ),
             ),
         ],
       ),
@@ -92,20 +142,10 @@ class HomePageState extends State<HomePage> {
                           title: Text(_tasks[index].short_name),
                           subtitle: Text(_tasks[index].description),
                           onTap: () {
-                            continueCallBack() => {
-                              Navigator.pop(context),
-                              Navigator.push(
-                                context, MaterialPageRoute(builder: (_) => TaskPage(
-                                  taskID: _tasks[index].id,
-                                ))),
-                            };
-                            BlurryDialog alert = BlurryDialog("Предупреждение", "Вы действительно хотите выполнить данное задание?", continueCallBack);
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return alert;
-                              },
-                            );
+                            Navigator.push(
+                              context, MaterialPageRoute(builder: (_) => TaskPage(
+                                taskID: _tasks[index].id,
+                            )));
                           },
                           // leading: CircleAvatar(
                           //     backgroundImage: NetworkImage(

@@ -37,8 +37,44 @@ class DatabaseProvider {
     Database database,
     int oldVersion,
     int newVersion,
-  ) {
+  ) async {
     if (newVersion > oldVersion) {}
+    var result = await database.rawQuery("""
+      delete from main_mine;
+      delete from sqlite_sequence where name='main_mine';
+      delete from main_documentation;
+      delete from sqlite_sequence where name='main_documentation';
+      delete from main_layer;
+      delete from sqlite_sequence where name='main_layer';
+      delete from main_well;
+      delete from sqlite_sequence where name='main_well';
+      delete from main_task;
+      delete from sqlite_sequence where name='main_task';
+      delete from main_welltask;
+      delete from sqlite_sequence where name='main_welltask';
+      delete from main_layermaterial;
+      delete from sqlite_sequence where name='main_layermaterial';
+      delete from main_license;
+      delete from sqlite_sequence where name='main_license';
+      delete from main_linelicensewatercourse;
+      delete from sqlite_sequence where name='main_linelicensewatercourse';
+      delete from main_line;
+      delete from sqlite_sequence where name='main_line';
+      delete from main_licensewatercourse;
+      delete from sqlite_sequence where name='main_licensewatercourse';
+      delete from main_customuser;
+      delete from sqlite_sequence where name='main_customuser';
+      delete from main_watercourse;
+      delete from sqlite_sequence where name='main_watercourse';
+      delete from main_team;
+      delete from sqlite_sequence where name='main_team';
+      delete from main_taskstatus;
+      delete from sqlite_sequence where name='main_taskstatus';
+      delete from main_role;
+      delete from sqlite_sequence where name='main_role';
+      delete from main_licensestatus;
+      delete from sqlite_sequence where name='main_licensestatus';
+    """);
   }
 
   static const main_mine = """
@@ -100,7 +136,8 @@ static const main_well = """
 	"line_id"	bigint,
 	"created_at"	datetime NOT NULL,
 	"updated_at"	datetime NOT NULL,
-	FOREIGN KEY("line_id") REFERENCES "main_line"("id") DEFERRABLE INITIALLY DEFERRED
+	FOREIGN KEY("line_id") REFERENCES "main_line"("id") DEFERRABLE INITIALLY DEFERRED,
+  UNIQUE(name, line_id)
 );""";
 static const main_task = """
   CREATE TABLE IF NOT EXISTS "main_task" (

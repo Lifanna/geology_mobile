@@ -42,6 +42,11 @@ dependencies:
   path_provider: any
   flutter_secure_storage: ^5.0.2
   flutter_native_splash: ^2.2.19
+  connectivity_plus: ^3.0.3
+  # camera: ^0.10.3+2
+  camera: ^0.9.4+19
+  permission_handler: ^10.2.0
+  
 
 dev_dependencies:
   flutter_test:

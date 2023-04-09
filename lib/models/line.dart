@@ -18,4 +18,12 @@ class Line {
 
     return line;
   }
+
+  Map<String, dynamic> toDatabaseJson(Line line) {
+    var databaseJson = {
+      'name': line.name
+    };
+
+    return databaseJson;
+  }
 }

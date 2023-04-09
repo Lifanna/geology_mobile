@@ -10,4 +10,8 @@ abstract class ITaskRepository {
   Future<Task?> getTaskById(int id);
 
   Future<List<Well>> getTaskWells(int id);
+
+  Future<List<Task>> getAllTasksFromDb();
+
+  Future<void> completeTask(int taskId);
 }
