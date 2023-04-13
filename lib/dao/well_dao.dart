@@ -83,4 +83,14 @@ class WellDao {
       int lastId = await db.insert("main_welltask", wellTaskDatabaseJson);
     }
   }
+
+  Future<void> addWellPhoto(int wellID, String photoPath) async {
+    final db = await dbProvider.database;
+
+    var wellPhotoDatabaseJson = {
+      'pillar_photo': photoPath,
+    };
+
+    int lastId = await db.update("main_well", wellPhotoDatabaseJson, where: "id=?", whereArgs: [wellID]);
+  }
 }

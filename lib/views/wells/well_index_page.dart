@@ -3,6 +3,7 @@ import 'package:flutter_application_1/controllers/layer_controller.dart';
 import 'package:flutter_application_1/controllers/well_controller.dart';
 import 'package:flutter_application_1/models/layer.dart';
 import 'package:flutter_application_1/models/well.dart';
+import 'package:flutter_application_1/views/geology/task_page.dart';
 import 'package:flutter_application_1/views/layers/layer_create_page.dart';
 import 'package:flutter_application_1/views/layers/layer_index_page.dart';
 import 'package:camera/camera.dart';
@@ -238,6 +239,8 @@ class WellIndexPageState extends State<WellIndexPage> {
                         ),
                         onPressed: () {
                           Navigator.pop(context);
+                          Navigator.push(
+                            context, MaterialPageRoute(builder: (_) => TaskPage(taskID: widget.taskID,)));
                         },
                       ),
                     ),

@@ -35,4 +35,8 @@ class WellRepository implements IWellRepository {
 
     return await wellDao.addWellByTask(well, taskId);
   }
+
+  Future<void> addWellPhoto(int wellID, String photoPath) async {
+    return await wellDao.addWellPhoto(wellID, photoPath);
+  }
 }

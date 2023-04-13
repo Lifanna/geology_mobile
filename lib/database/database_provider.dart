@@ -128,16 +128,19 @@ class DatabaseProvider {
 );""";
 
 static const main_well = """
-  CREATE TABLE IF NOT EXISTS "main_well" (
-	"id"	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"name"	varchar(255) NOT NULL,
-	"comment"	text,
-	"description"	text,
-	"line_id"	bigint,
-	"created_at"	datetime NOT NULL,
-	"updated_at"	datetime NOT NULL,
-	FOREIGN KEY("line_id") REFERENCES "main_line"("id") DEFERRABLE INITIALLY DEFERRED,
-  UNIQUE(name, line_id)
+  CREATE TABLE "main_well" (
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+    "name" varchar(255) NOT NULL, 
+    "comment" text NULL, 
+    "description" text NULL, 
+    "line_id" bigint NULL REFERENCES "main_line" ("id") DEFERRABLE INITIALLY DEFERRED, 
+    "created_at" datetime NOT NULL, 
+    "updated_at" datetime NOT NULL, 
+    "x" real NULL, 
+    "y" real NULL, 
+    "z" real NULL, 
+    "pillar_photo" varchar(100) NULL,
+    UNIQUE(name, line_id)
 );""";
 static const main_task = """
   CREATE TABLE IF NOT EXISTS "main_task" (

@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/controllers/well_controller.dart';
+import 'package:flutter_application_1/dialogs/messageBoxDialog.dart';
+import 'package:flutter_application_1/views/wells/well_index_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -12,6 +15,8 @@ class PillarPhotoPreviewPage extends StatefulWidget {
 
   PillarPhotoPreviewPage({required this.picture, required this.taskID, required this.wellID});
 
+  WellController _wellController = WellController();
+
   @override
   PillarPhotoPreviewPageState createState() => PillarPhotoPreviewPageState();
 }
@@ -19,8 +24,6 @@ class PillarPhotoPreviewPage extends StatefulWidget {
 class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
   TextEditingController _pictureNameController = TextEditingController();
   late File _file;
-  bool isLoading = false;
-  final themeColor = new Color(0xfff5a623);
 
   @override
   void initState() {
@@ -44,6 +47,14 @@ class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
       width: width,
       child: Text(
         "Сохранить",
+        textAlign: TextAlign.center,
+      )
+    );
+
+    var backBtn = SizedBox(
+      width: width,
+      child: Text(
+        "Назад",
         textAlign: TextAlign.center,
       )
     );
@@ -87,14 +98,6 @@ class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
                           backgroundColor: Colors.green,
                         ),
                         onPressed: () async {
-                          // Directory? documentsDirectory = await getExternalStorageDirectory();
-                          // print("MMMMMMMMM: ${documentsDirectory.path+'/'+'geology'}");
-                          // new Directory('geology').create(recursive: true)
-                          // // The created directory is returned as a Future.
-                          // .then((Directory directory) {
-                          //   print('Path of New Dir: '+directory.path);
-                          // });
-                          // widget.picture.saveTo('geology');
                           final dir = Directory((Platform.isAndroid
                             ? await getApplicationDocumentsDirectory() //FOR ANDROID
                             : await getApplicationSupportDirectory() //FOR IOS
@@ -108,29 +111,42 @@ class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
                             dir.create(recursive: true);
                           }
 
-                          var created = _file!.copy("${dir.path}/${widget.picture.name}");
-                          setState(() {
-                            isLoading = true;
-                          });
+                          String photoPath = "${dir.path}/${widget.picture.name}";
+
+                          var created = _file!.copy(photoPath);
+
                           created.then((value) => 
-                            setState(() {
-                              isLoading = false;
+                            widget._wellController.addWellPhoto(widget.wellID, photoPath).then((value){
+                              continueCallBack() => {
+                                Navigator.pop(context),
+                                Navigator.push(
+                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
+                              };
+                              BlurryDialog alert = BlurryDialog("Сообщение", "Фото успешно сохранено!", continueCallBack);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return alert;
+                                },
+                              );
                             })
                           );
                         },
                       ),
                     ),
-                    Positioned(
-                      child: isLoading ? 
-                      Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: ElevatedButton(
+                        child: backBtn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
                         ),
-                      ) :
-                      Container(),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,)));
+                        },
+                      ),
                     ),
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_application_1/models/layer_material.dart';
 import 'package:flutter_application_1/models/storage_item.dart';
 import 'package:flutter_application_1/models/task.dart';
@@ -8,8 +9,8 @@ import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/models/api_models.dart';
 
-final _base = "http://192.168.1.62:8000";
-// final _base = "http://192.168.188.102:8000";
+// final _base = "http://192.168.1.62:8000";
+final _base = "http://192.168.188.102:8000";
 final _signInURL = "/api/token/";
 final _sessionEndpoint = "/api/token/refresh/";
 final _tokenURL = _base + _signInURL;
@@ -130,6 +131,18 @@ class LayerService {
 class SyncService {
   Future<bool> syncronizeApi(Token token, List<Map<String,dynamic>> tasks, List<Map<String,dynamic>> wells, List<Map<String,dynamic>> layers, List<Map<String,dynamic>> wellTasks) async {
     var syncronized = false;
+    List<Map<String, dynamic>> wellsNew = [];
+
+    wells.forEach((well) {
+      // final file = await http.MultipartFile.fromPath('pillar_photo', well['pillar_photo']);
+      // files.add(file);
+      final bytes = File(well['pillar_photo']).readAsBytesSync();
+
+      String img64 = base64Encode(bytes);
+      final newUser = Map.of(well);
+      newUser['pillar_photo_file'] = img64;
+      wellsNew.add(newUser);
+    });
     // print("QQQQQQQQQQQQQQQWWWWWWWW: ${jsonEncode({
     //         'tasks': tasks,
     //         'wells': wells,
@@ -137,6 +150,7 @@ class SyncService {
     //         'wellTasks': wellTasks,
     //       })}");
     // try {
+      // request.files.add(new http.MultipartFile.fromBytes('file', await File.fromUri("<path/to/file>").readAsBytes(), contentType: new MediaType('image', 'jpeg')))
       final http.Response response = await http.post(
         Uri.parse(_syncronizeURL),
           headers: <String, String>{
@@ -145,15 +159,47 @@ class SyncService {
           },
           body: jsonEncode({
             'tasks': tasks,
-            'wells': wells,
+            'wells': wellsNew,
             'layers': layers,
             'wellTasks': wellTasks,
           })
       );
-      print("YYYYYY: ${response.statusCode}");
+      // print("YYYYYY: ${response.statusCode}");
+      // var postUri = Uri.parse(_syncronizeURL);
+      // var request = new http.MultipartRequest("POST", postUri);
+
+      // List<Map<String, dynamic>> wellsNew = [];
+
+      // wells.forEach((well) {
+      //   // final file = await http.MultipartFile.fromPath('pillar_photo', well['pillar_photo']);
+      //   // files.add(file);
+      //   final bytes = File(well['pillar_photo']).readAsBytesSync();
+
+      //   String img64 = base64Encode(bytes);
+      //   final newUser = Map.of(well);
+      //   newUser['pillar_photo_file'] = img64;
+      //   wellsNew.add(newUser);
+      // });
+
+      // var requestData = {
+      //   'tasks': tasks,
+      //   'wells': wellsNew,
+      //   'layers': layers,
+      //   'wellTasks': wellTasks,
+      // };
+
+      // request = jsonToFormData(request, requestData);
+      //   // .add(await http.MultipartFile.fromPath("image", file.path));
+      // final response = await request.send();
       syncronized = response.statusCode == 200;
     // } finally {
       return syncronized;
     // }
+  }
+  jsonToFormData(http.MultipartRequest request, Map<String, dynamic> data) {
+    for (var key in data.keys) {
+      request.fields[key] = data[key].toString();
+    }
+    return request;
   }
 }

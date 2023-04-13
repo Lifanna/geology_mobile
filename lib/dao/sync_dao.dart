@@ -60,7 +60,7 @@ class SyncDao {
     final db = await dbProvider.database;
 
     return await db.rawQuery("""
-      SELECT name, description, comment, line_id, created_at, updated_at
+      SELECT name, description, comment, line_id, pillar_photo, '' as pillar_photo_file, created_at, updated_at
       FROM main_well
     """);
   }

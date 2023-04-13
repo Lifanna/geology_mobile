@@ -146,6 +146,8 @@ class TaskPageState extends State<TaskPage> {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => HomePage()));
                     },
                   ),
                 ),
