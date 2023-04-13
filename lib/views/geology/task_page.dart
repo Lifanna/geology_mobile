@@ -79,110 +79,107 @@ class TaskPageState extends State<TaskPage> {
             
           }, ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            SizedBox(
-              height: 100,
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Text(
-                  _task?.description ?? ""
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 100,
+      body: ListView(
+        children: <Widget>[
+          SizedBox(
+            height: 100,
+            child: Padding(
+              padding: EdgeInsets.all(10),
               child: Text(
-                "Список скважин"
+                _task?.description ?? ""
               ),
             ),
-            SizedBox(
-              height: 100,
-              child: FutureBuilder<List<Well>>(
-                future: getTaskWells(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: _wells.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: ListTile(
-                          title: Text(_wells[index].name),
-                          subtitle: Text(_wells[index].description),
-                          onTap: () {
-                            Navigator.push(
-                              context, MaterialPageRoute(builder: (_) => WellIndexPage(
-                                wellID: _wells[index].id, taskID: widget.taskID,
-                            )));
-                          },
-                        )
-                      );
-                    }
-                  );
-                }
-              )
+          ),
+          SizedBox(
+            height: 100,
+            child: Text(
+              "Список скважин"
             ),
-            SizedBox(
-              height: 100,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: ElevatedButton(
-                      child: addWellBtn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context, MaterialPageRoute(builder: (_) => WellCreatePage(lineID: _task?.line.id ?? 0, taskID: _task?.id ?? 0,)));
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: ElevatedButton(
-                      child: backBtn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context, MaterialPageRoute(builder: (_) => HomePage()));
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: ElevatedButton(
-                      child: completeBtn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: () {
-                        continueCallBack() => {
-                          Navigator.pop(context),
-                          widget._tasksController.completeTask(widget.taskID),
+          ),
+          SizedBox(
+            height: 100,
+            child: FutureBuilder<List<Well>>(
+              future: getTaskWells(),
+              builder: (context, snapshot) {
+                return ListView.builder(
+                  itemCount: _wells.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(_wells[index].name),
+                        subtitle: Text(_wells[index].description),
+                        onTap: () {
                           Navigator.push(
-                            context, MaterialPageRoute(builder: (_) => HomePage())),
-                        };
-                        BlurryDialog alert = BlurryDialog("Предупреждение", "Вы действительно хотите завершить данное задание?", continueCallBack);
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return alert;
-                          },
-                        );
-                      },
+                            context, MaterialPageRoute(builder: (_) => WellIndexPage(
+                              wellID: _wells[index].id, taskID: widget.taskID,
+                          )));
+                        },
+                      )
+                    );
+                  }
+                );
+              }
+            )
+          ),
+          SizedBox(
+            height: 100,
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    child: addWellBtn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
                     ),
+                    onPressed: () {
+                      Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => WellCreatePage(lineID: _task?.line.id ?? 0, taskID: _task?.id ?? 0,)));
+                    },
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    child: backBtn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => HomePage()));
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    child: completeBtn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    onPressed: () {
+                      continueCallBack() => {
+                        Navigator.pop(context),
+                        widget._tasksController.completeTask(widget.taskID),
+                        Navigator.push(
+                          context, MaterialPageRoute(builder: (_) => HomePage())),
+                      };
+                      BlurryDialog alert = BlurryDialog("Предупреждение", "Вы действительно хотите завершить данное задание?", continueCallBack);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
