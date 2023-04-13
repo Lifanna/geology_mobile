@@ -84,6 +84,7 @@ class TaskPageState extends State<TaskPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             SizedBox(
+              height: 100,
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: Text(
@@ -92,11 +93,13 @@ class TaskPageState extends State<TaskPage> {
               ),
             ),
             SizedBox(
+              height: 100,
               child: Text(
                 "Список скважин"
               ),
             ),
             SizedBox(
+              height: 100,
               child: FutureBuilder<List<Well>>(
                 future: getTaskWells(),
                 builder: (context, snapshot) {
@@ -121,6 +124,7 @@ class TaskPageState extends State<TaskPage> {
               )
             ),
             SizedBox(
+              height: 100,
               child: Column(
                 children: [
                   Padding(
