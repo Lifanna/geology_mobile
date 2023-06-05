@@ -1,4 +1,5 @@
 import 'package:flutter_application_1/models/task.dart';
+import 'package:flutter_application_1/models/task_image.dart';
 import 'package:flutter_application_1/models/user_model.dart';
 import 'package:flutter_application_1/models/api_models.dart';
 import 'package:flutter_application_1/models/well.dart';
@@ -14,4 +15,8 @@ abstract class ITaskRepository {
   Future<List<Task>> getAllTasksFromDb();
 
   Future<void> completeTask(int taskId);
+
+  Future<bool> checkTaskCompleteness(int taskId);
+
+  Future<List<TaskImage>> getTaskImages(int taskID);
 }

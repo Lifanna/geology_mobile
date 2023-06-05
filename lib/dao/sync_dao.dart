@@ -1,8 +1,4 @@
-import 'package:flutter_application_1/api_connection/api_connection.dart';
 import 'package:flutter_application_1/database/database_provider.dart';
-import 'package:flutter_application_1/models/layer.dart';
-import 'package:flutter_application_1/models/task.dart';
-import 'package:flutter_application_1/models/well.dart';
 
 class SyncDao {
   final dbProvider = DatabaseProvider.dbProvider;
@@ -10,40 +6,46 @@ class SyncDao {
   Future<void> clearDatabase() async {
     final db = await dbProvider.database;
 
-    var qwe = await db.rawDelete("delete from main_mine");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_mine'");
-    qwe = await db.rawDelete("delete from main_documentation");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_documentation'");
-    qwe = await db.rawDelete("delete from main_layer");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_layer'");
-    qwe = await db.rawDelete("delete from main_well");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_well'");
-    qwe = await db.rawDelete("delete from main_task");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_task'");
-    qwe = await db.rawDelete("delete from main_welltask");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_welltask'");
-    qwe = await db.rawDelete("delete from main_layermaterial");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_layermaterial'");
-    qwe = await db.rawDelete("delete from main_license");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_license'");
-    qwe = await db.rawDelete("delete from main_linelicensewatercourse");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_linelicensewatercourse'");
-    qwe = await db.rawDelete("delete from main_line");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_line'");
-    qwe = await db.rawDelete("delete from main_licensewatercourse");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_licensewatercourse'");
-    qwe = await db.rawDelete("delete from main_customuser");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_customuser'");
-    qwe = await db.rawDelete("delete from main_watercourse");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_watercourse'");
-    qwe = await db.rawDelete("delete from main_team");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_team'");
-    qwe = await db.rawDelete("delete from main_taskstatus");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_taskstatus'");
-    qwe = await db.rawDelete("delete from main_role");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_role'");
-    qwe = await db.rawDelete("delete from main_licensestatus");
-    qwe = await db.rawDelete("delete from sqlite_sequence where name='main_licensestatus'");
+    await db.rawDelete("delete from main_mine");
+    await db.rawDelete("delete from sqlite_sequence where name='main_mine'");
+    await db.rawDelete("delete from main_documentation");
+    await db.rawDelete("delete from sqlite_sequence where name='main_documentation'");
+    await db.rawDelete("delete from main_layer");
+    await db.rawDelete("delete from sqlite_sequence where name='main_layer'");
+    await db.rawDelete("delete from main_well");
+    await db.rawDelete("delete from sqlite_sequence where name='main_well'");
+    await db.rawDelete("delete from main_task");
+    await db.rawDelete("delete from sqlite_sequence where name='main_task'");
+    await db.rawDelete("delete from sqlite_sequence where name='main_taskimage'");
+    await db.rawDelete("delete from main_taskimage");
+    await db.rawDelete("delete from sqlite_sequence where name='main_taskimagesingle'");
+    await db.rawDelete("delete from main_taskimagesingle");
+    await db.rawDelete("delete from main_welltask");
+    await db.rawDelete("delete from sqlite_sequence where name='main_welltask'");
+    await db.rawDelete("delete from main_layermaterial");
+    await db.rawDelete("delete from sqlite_sequence where name='main_layermaterial'");
+    await db.rawDelete("delete from main_license");
+    await db.rawDelete("delete from sqlite_sequence where name='main_license'");
+    await db.rawDelete("delete from main_linelicensewatercourse");
+    await db.rawDelete("delete from sqlite_sequence where name='main_linelicensewatercourse'");
+    await db.rawDelete("delete from main_line");
+    await db.rawDelete("delete from sqlite_sequence where name='main_line'");
+    await db.rawDelete("delete from main_licensewatercourse");
+    await db.rawDelete("delete from sqlite_sequence where name='main_licensewatercourse'");
+    await db.rawDelete("delete from main_customuser");
+    await db.rawDelete("delete from sqlite_sequence where name='main_customuser'");
+    await db.rawDelete("delete from main_watercourse");
+    await db.rawDelete("delete from sqlite_sequence where name='main_watercourse'");
+    await db.rawDelete("delete from main_team");
+    await db.rawDelete("delete from sqlite_sequence where name='main_team'");
+    await db.rawDelete("delete from main_taskstatus");
+    await db.rawDelete("delete from sqlite_sequence where name='main_taskstatus'");
+    await db.rawDelete("delete from main_role");
+    await db.rawDelete("delete from sqlite_sequence where name='main_role'");
+    await db.rawDelete("delete from main_licensestatus");
+    await db.rawDelete("delete from sqlite_sequence where name='main_licensestatus'");
+
+    print('CLEARED!');
   }
 
   Future<List<Map<String, dynamic>>> buildTasks() async {

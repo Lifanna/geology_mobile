@@ -21,8 +21,18 @@ class LayerRepository implements ILayerRepository {
   }
 
   @override
+  Future<Layer> getLayer(int id) async {
+    return await layerDao.getLayer(id);
+  }
+
+  @override
   Future<List<LayerMaterial>> getLayerMaterials() async {
     return await layerDao.getLayerMaterials();
+  }
+
+  @override
+  Future<double> getPreviousDepth(int wellID) async {
+    return await layerDao.getPreviousDepth(wellID);
   }
 
   @override
@@ -54,6 +64,7 @@ class LayerRepository implements ILayerRepository {
 
     Layer layer = Layer();
     layer.name = name;
+    layer.depth = double.parse(name);
     layer.description = description;
     layer.layerMaterial = layerMaterial;
     layer.well = well;
@@ -64,5 +75,33 @@ class LayerRepository implements ILayerRepository {
     layer.responsible = user;
 
     return await layerDao.addLayer(layer);
+  }
+
+  @override
+  Future<void> updateLayer(
+    int id, String name, String description, String material, String comment, bool sampleObtained, bool aquifer, bool drillingStopped
+  ) async {
+    print("SICCCCCCHHHHHHHHHHHHHHHH");
+
+    LayerMaterial layerMaterial = LayerMaterial();
+    layerMaterial.name = material;
+
+    var userID = await StorageService().readSecureData("userID");
+    User user = User();
+    user.id = int.parse(userID!);
+
+    Layer layer = Layer();
+    layer.id = id;
+    layer.name = name;
+    layer.depth = double.parse(name);
+    layer.description = description;
+    layer.layerMaterial = layerMaterial;
+    layer.comment = comment;
+    layer.sampleObtained = sampleObtained;
+    layer.drillingStopped = drillingStopped;
+    layer.aquifer = aquifer;
+    layer.responsible = user;
+
+    return await layerDao.updateLayer(layer);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_application_1/models/api_models.dart';
 import 'package:flutter_application_1/models/task.dart';
+import 'package:flutter_application_1/models/task_image.dart';
 import 'package:flutter_application_1/models/user_model.dart';
 import 'package:flutter_application_1/models/well.dart';
 import 'package:flutter_application_1/repository/task_repository.dart';
@@ -20,13 +21,10 @@ class TaskController {
     Map _source = {ConnectivityResult.none: false};
     final MyConnectivity _connectivity = MyConnectivity.instance;
 
-    print("NGNGNGNGG: ${result}");
-
     if (result != ConnectivityResult.wifi) {
       return await _taskRepo.getSavedTasks();
     }
     else {
-      print("TNTNTNNTTNNTNTNTNTNT");
       return await _taskRepo.getTasks();
     }
   }
@@ -39,7 +37,15 @@ class TaskController {
     return await _taskRepo.getAllTasksFromDb();
   }
 
+  Future<bool> checkTaskCompleteness(int taskId) async {
+    return await _taskRepo.checkTaskCompleteness(taskId);
+  }
+
   Future<void> completeTask(int taskId) async {
     return await _taskRepo.completeTask(taskId);
+  }
+
+  Future<List<TaskImage>> getTaskImages(int taskID) async {
+    return await _taskRepo.getTaskImages(taskID);
   }
 }

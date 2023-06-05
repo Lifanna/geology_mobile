@@ -91,12 +91,8 @@ CREATE TABLE IF NOT EXISTS "main_license" (
 	"created_at"	datetime NOT NULL,
 	"updated_at"	datetime NOT NULL,
 	"geologist_id"	bigint,
-	"mbu_id"	bigint,
-	"pmbou_id"	bigint,
 	"status_id"	bigint NOT NULL,
 	FOREIGN KEY("geologist_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY("mbu_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY("pmbou_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("status_id") REFERENCES "main_licensestatus"("id") DEFERRABLE INITIALLY DEFERRED
 );
 CREATE TABLE IF NOT EXISTS "main_linelicensewatercourse" (
@@ -221,12 +217,6 @@ CREATE INDEX IF NOT EXISTS "main_welltask_task_id_8cbc5d51" ON "main_welltask" (
 );
 CREATE INDEX IF NOT EXISTS "main_license_status_id_a44fdbf5" ON "main_license" (
 	"status_id"
-);
-CREATE INDEX IF NOT EXISTS "main_license_pmbou_id_3d25be14" ON "main_license" (
-	"pmbou_id"
-);
-CREATE INDEX IF NOT EXISTS "main_license_mbu_id_8268238b" ON "main_license" (
-	"mbu_id"
 );
 CREATE INDEX IF NOT EXISTS "main_license_geologist_id_5e8f1352" ON "main_license" (
 	"geologist_id"

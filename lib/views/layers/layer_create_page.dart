@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/layer_controller.dart';
+import 'package:flutter_application_1/dialogs/errorDialog.dart';
 import 'package:flutter_application_1/dialogs/messageBoxDialog.dart';
 import 'package:flutter_application_1/models/layer_material.dart';
 import 'package:flutter_application_1/views/wells/well_index_page.dart';
@@ -18,6 +19,7 @@ class LayerCreatePage extends StatefulWidget {
 var materials = ['Галька', 'Песок', 'Чернозем', 'Глина'];
 
 class LayerCreatePageState extends State<LayerCreatePage> {
+  TextEditingController _prevDepthController = TextEditingController();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _materialController = TextEditingController();
@@ -29,6 +31,8 @@ class LayerCreatePageState extends State<LayerCreatePage> {
   bool aquifer = false;
   bool drillingStopped = false;
 
+  double? _previousDepth;
+
   late List<LayerMaterial> _layerMaterials = [];
 
   @override
@@ -36,6 +40,7 @@ class LayerCreatePageState extends State<LayerCreatePage> {
     super.initState();
 
     getLayerMaterials();
+    getPreviousDepth();
   }
 
   @override
@@ -45,6 +50,15 @@ class LayerCreatePageState extends State<LayerCreatePage> {
     _materialController.dispose();
     _commentController.dispose();
     super.dispose();
+  }
+
+  Future<void> getPreviousDepth() async {
+    var previousDepth = await widget._layerController.getPreviousDepth(widget.wellID);
+
+    setState(() {
+      _previousDepth = previousDepth;
+      _prevDepthController.text = _previousDepth.toString();
+    });
   }
 
   Future<void> getLayerMaterials() async {
@@ -98,28 +112,33 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
                   child: TextField(
+                    controller: _prevDepthController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Предыдущая глубина',
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                  child: TextFormField(
                     controller: _nameController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Глубина',
                       hintText: 'Введите глубину интервала'
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 120,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Описание',
-                      hintText: 'Введите описание интервала'
-                    ),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 4,
+                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    validator: (value) {
+                      RegExp regex = RegExp(r"^[+-]?[0-9]{1,2}([,.][0-9]{1,2})?$");
+                      if (!regex.hasMatch(value!))
+                        return 'Введите правильное значение';
+                      else
+                        return null;
+                    },
                   ),
                 ),
               ),
@@ -158,6 +177,22 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                         material = newValue ?? "";
                       });
                     },
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 120,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Описание',
+                      hintText: 'Введите описание интервала'
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 4,
                   ),
                 ),
               ),
@@ -232,6 +267,23 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                           String description = _descriptionController.text;
                           String comment = _commentController.text;
                           String _material = material ?? "";
+
+                          print("RREEE: ${_previousDepth}");
+
+                          name = name.replaceAll(",", ".");
+
+                          if (double.parse(name) <= _previousDepth!) {
+                            ErrorDialog alert = ErrorDialog("Ошибка", "Неверное значение интервала");
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return alert;
+                              },
+                            );
+
+                            return;
+                          }
+
                           widget._layerController.addLayer(widget.wellID, name, description, _material, comment, sampleObtained, aquifer, drillingStopped);
 
                           continueCallBack() => {
@@ -239,7 +291,7 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                             Navigator.push(
                               context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
                           };
-                          BlurryDialog alert = BlurryDialog("Сообщение", "Слой успешно добавлен!", continueCallBack);
+                          BlurryDialog alert = BlurryDialog("Сообщение", "Интервал успешно добавлен!", continueCallBack);
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {

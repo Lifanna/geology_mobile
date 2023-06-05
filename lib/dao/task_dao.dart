@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter_application_1/dao/line_dao.dart';
 import 'package:flutter_application_1/dao/well_dao.dart';
 import 'package:flutter_application_1/database/database_provider.dart';
 import 'package:flutter_application_1/models/task.dart';
+import 'package:flutter_application_1/models/task_image.dart';
 import 'package:flutter_application_1/models/well.dart';
+import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 
 class TaskDao {
   final dbProvider = DatabaseProvider.dbProvider;
@@ -14,7 +19,7 @@ class TaskDao {
 
     final userTable = 'main_task';
     
-    var taskExists = await getTaskById(task.id);
+    var taskExists = await getTaskByShortName(task.short_name);
 
     var wellDao = WellDao();
 
@@ -38,8 +43,8 @@ class TaskDao {
     var taskStatusDatabaseJson = task.status.toDatabaseJson(task.status);
 
     if (taskStatusIsEmpty){
-      int lastId = await db.insert("main_taskstatus", taskStatusDatabaseJson);
-      lastId = await db.insert("main_taskstatus", {'name': 'выполнено'});
+      // int lastId = await db.insert("main_taskstatus", taskStatusDatabaseJson);
+      int lastId = await db.insert("main_taskstatus", {'name': 'выполнено'});
       lastId = await db.insert("main_taskstatus", {'name': 'на выполнении'});
     }
 
@@ -60,6 +65,24 @@ class TaskDao {
 
     final String tasksTable = 'main_task';
     result = await db.query(tasksTable, where: 'id=?', whereArgs: [id]);
+    var result2 = await db.query(tasksTable);
+
+    if (result.isNotEmpty) {
+      task = Task.fromDatabaseJson(result.first);
+    }
+
+    return task;
+  }
+
+  Future<Task?> getTaskByShortName(String shortName) async {
+    final db = await dbProvider.database;
+
+    Task? task;
+
+    List<Map<String, dynamic>> result;
+
+    final String tasksTable = 'main_task';
+    result = await db.query(tasksTable, where: 'short_name=?', whereArgs: [shortName]);
     var result2 = await db.query(tasksTable);
 
     if (result.isNotEmpty) {
@@ -133,15 +156,43 @@ class TaskDao {
     return taskStatus.isEmpty;
   }
 
+  Future<bool> checkWellPillarPhoto(int taskId) async {
+    final db = await dbProvider.database;
+    bool pillarPhotoExists = false;
+
+    var wellsExists = await db.rawQuery("""
+      SELECT mw.id FROM main_well mw
+      JOIN main_welltask mwt ON
+      mwt.well_id = mw.id
+      WHERE mwt.task_id = ${taskId}
+    """);
+
+    var wellWithPillar = await db.rawQuery("""
+      SELECT mw.id FROM main_well mw
+      JOIN main_welltask mwt ON
+      mwt.well_id = mw.id
+      WHERE mwt.task_id = ${taskId} AND pillar_photo IS NULL
+    """);
+
+    if (wellsExists.isEmpty){
+      pillarPhotoExists = true;
+    }
+
+    if (wellWithPillar.isNotEmpty) {
+      pillarPhotoExists = true;
+    }
+
+    return pillarPhotoExists;
+  }
+
   Future<void> completeTask(int taskId) async {
     final db = await dbProvider.database;
-    int taskStatus = 2;
+    var completed = false;
+
     var result = await db.rawQuery("""
       UPDATE main_task SET status_id = (SELECT id FROM main_taskstatus WHERE name = 'выполнено') 
       WHERE id = ${taskId}
     """);
-
-    print("YYYYYYYYY: ${result}");
   }
 
   Future<List<Task>> getSavedTasks() async {
@@ -158,5 +209,70 @@ class TaskDao {
     }
 
     return tasks;
+  }
+
+  Future<List<TaskImage>> getTaskImages(int taskID) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result;
+
+    result = await db.rawQuery("""
+      SELECT 
+        mti.id as task_image_id, 
+        mtis.id as task_image_single_id, 
+        mtis.image
+      FROM main_taskimage mti
+      JOIN main_task mt ON
+      mt.id = mti.task_id
+      JOIN main_taskimagesingle mtis ON
+      mtis.id = mti.task_image_single_id
+      WHERE mti.task_id = ${taskID}
+    """);
+
+    List<TaskImage> images = [];
+
+    for (var taskImageJson in result) {
+      images.add(TaskImage.fromDatabaseJson(taskImageJson));
+    }
+
+    return images;
+  }
+
+  Future<void> addTaskImagesToDb(TaskImage taskImage) async {
+    final db = await dbProvider.database;
+
+    var taskImagesExists = await db.query("main_taskimage", where: 'task_id=?', whereArgs: [taskImage.taskId]);
+    if (taskImagesExists.isNotEmpty){
+      return;
+    }
+
+    var splitedUrl = taskImage.taskImageSingle.remoteUrl.split("/");
+    taskImage.taskImageSingle.remoteUrl = taskImage.taskImageSingle.remoteUrl.replaceAll('api/tasks/', 'media/');
+    print("AFTERRRRRRRRRRR: ${taskImage.taskId} ${taskImage.taskImageSingle.remoteUrl}");
+
+    Uri url = Uri.parse(taskImage.taskImageSingle.remoteUrl);
+    var response = await get(url);
+    var documentDirectory = await getApplicationDocumentsDirectory();
+    var firstPath = documentDirectory.path + "/images";
+    var localUrl = documentDirectory.path + '/images/${splitedUrl.last}'; 
+
+    //comment out the next three lines to prevent the image from being saved
+    //to the device to show that it's coming from the internet
+
+    await Directory(firstPath).create(recursive: true);
+    File file2 = File(localUrl);
+    file2.writeAsBytesSync(response.bodyBytes);
+
+    taskImage.taskImageSingle.localUrl = localUrl;
+
+    var taskImageSingleDatabaseJson = taskImage.taskImageSingle.toDatabaseJson(taskImage.taskImageSingle);
+
+    int lastId = await db.insert("main_taskimagesingle", taskImageSingleDatabaseJson);
+
+    taskImage.taskImageSingle.id = lastId;
+
+    var taskImageDatabaseJson = taskImage.toDatabaseJson(taskImage);
+
+    int lastIdSingle = await db.insert("main_taskimage", taskImageDatabaseJson);
   }
 }

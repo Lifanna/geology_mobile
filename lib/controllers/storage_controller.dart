@@ -5,7 +5,6 @@ class StorageController {
   StorageRepository _storageRepo = StorageRepository();
 
   Future<void> clearDatabase() async {
-    print("CSDVVVCVCVCXVVVVVVVVVVVVVVVVVVVVVv");
     await _storageRepo.clearDatabase();
   }
 }

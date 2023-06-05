@@ -9,8 +9,11 @@ import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/models/api_models.dart';
 
+final _base = "http://192.168.2.10";
 // final _base = "http://192.168.1.62:8000";
-final _base = "http://192.168.188.102:8000";
+// final _base = "http://192.168.188.102:8000";
+// final _base = "https://www.homeowner.net.ru";
+// final _base = "https://geolog.space";
 final _signInURL = "/api/token/";
 final _sessionEndpoint = "/api/token/refresh/";
 final _tokenURL = _base + _signInURL;
@@ -29,6 +32,8 @@ Future<StatusCode> loginApi(UserLogin userLogin) async {
     body: jsonEncode(userLogin.toDatabaseJson()),
   );
 
+  print("NJFNFJNFJNFJFNFFJNFJFNJ:     ${response.statusCode} ${response.body}");
+
   if (response.statusCode == 200) {
     Token token = Token.fromJson(json.decode(response.body));
 
@@ -40,7 +45,12 @@ Future<StatusCode> loginApi(UserLogin userLogin) async {
 
     return statusCode;
   } else {
-    throw Exception(json.decode(response.body));
+    StatusCode statusCode = StatusCode(
+      statusCode: response.statusCode.toString(), 
+      message: response.body,
+    );
+    // throw Exception(json.decode(response.body));
+    return statusCode;
   }
 }
 
@@ -57,10 +67,8 @@ Future<List<Task>> fetchTasks(Token token) async {
 
   if (response.statusCode == 200) {
     List<dynamic> tasksJson = await json.decode(utf8.decode(response.bodyBytes));
-
     for(var element in tasksJson) {
       Task task = Task.fromJson(element);
-      print(task);
       tasks.add(task);
     }
   }
@@ -103,7 +111,6 @@ class LayerService {
       },
     );
 
-    print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
 
     List<LayerMaterial> layerMaterials = [];
 
@@ -123,7 +130,6 @@ class LayerService {
       throw Exception(json.decode(response.body));
     }
 
-    print("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK ${layerMaterials}");
     return layerMaterials;
   }
 }

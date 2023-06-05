@@ -57,6 +57,18 @@ class Well {
     return databaseJson;
   }
 
+  Map<String, dynamic> toUpdateDatabaseJson(Well well) {
+    var databaseJson = {
+      'id': well.id,
+      'name': well.name,
+      'description': well.description,
+      'comment': well.comment,
+      'updated_at': DateTime.now().toString(),
+    };
+
+    return databaseJson;
+  }
+
   Map<String, dynamic> toWellTaskDatabaseJson(int wellId, int taskId) {
     var databaseJson = {
       'task_id': taskId,

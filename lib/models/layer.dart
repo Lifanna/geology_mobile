@@ -5,6 +5,7 @@ import 'package:flutter_application_1/models/well.dart';
 class Layer {
   late int id;
   late String name;
+  late double depth;
   late String description;
   late String comment;
   late Well well;
@@ -22,8 +23,9 @@ class Layer {
   factory Layer.fromJson(Map<dynamic, dynamic> data) {
     Layer layer = Layer();
     layer.id = data['id'];
-    layer.name = data['name'];  
-    layer.description = data['description'];  
+    layer.name = data['name'];
+    layer.depth = data['depth'];
+    layer.description = data['description'];
 
     return layer;
   }
@@ -34,6 +36,7 @@ class Layer {
     layerMaterial.name = data['layer_material_name'];
     layer.id = data['id'];
     layer.name = data['name'];
+    layer.depth = data['depth'];
     layer.createdAt = data['created_at'];
     layer.updatedAt = data['updated_at'];
     layer.layerMaterial = layerMaterial;
@@ -53,6 +56,7 @@ class Layer {
       'name': layer.name,
       'description': layer.description,
       'comment': layer.comment,
+      'depth': layer.depth,
       'well_id': layer.well.id,
       'layer_material_id': layer.layerMaterial.id,
       'responsible_id': layer.responsible.id,
@@ -60,6 +64,24 @@ class Layer {
       'drilling_stopped': layer.drillingStopped,
       'aquifer': layer.aquifer,
       'created_at': DateTime.now().toString(),
+      'updated_at': DateTime.now().toString(),
+    };
+
+    return databaseJson;
+  }
+
+  Map<String, dynamic> toUpdateDatabaseJson(Layer layer) {
+    var databaseJson = {
+      'id': layer.id,
+      'name': layer.name,
+      'description': layer.description,
+      'comment': layer.comment,
+      'depth': layer.depth,
+      'layer_material_id': layer.layerMaterial.id,
+      'responsible_id': layer.responsible.id,
+      'sample_obtained': layer.sampleObtained == true ? 1 : 0,
+      'drilling_stopped': layer.drillingStopped == true ? 1 : 0,
+      'aquifer': layer.aquifer == true ? 1 : 0,
       'updated_at': DateTime.now().toString(),
     };
 

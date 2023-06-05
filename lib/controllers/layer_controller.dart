@@ -20,10 +20,23 @@ class LayerController {
     return await _layerRepo.getLayerMaterials();
   }
 
+  Future<double> getPreviousDepth(int wellID) async {
+    return await _layerRepo.getPreviousDepth(wellID);
+  }
+
+  Future<Layer> getLayer(int id) async {
+    return await _layerRepo.getLayer(id);
+  }
+
   Future<void> addLayer(
     int wellId, String name, String description, String material, String comment, bool sampleObtained, bool aquifer, bool drillingStopped
   ) async {
-    
     return await _layerRepo.addLayer(wellId, name, description, material, comment, sampleObtained, aquifer, drillingStopped);
+  }
+
+  Future<void> updateLayer(
+    int id, String name, String description, String material, String comment, bool sampleObtained, bool aquifer, bool drillingStopped
+  ) async {
+    return await _layerRepo.updateLayer(id, name, description, material, comment, sampleObtained, aquifer, drillingStopped);
   }
 }

@@ -15,6 +15,10 @@ class WellController {
   Future<void> addWell(String name, String description, String comment, int lineId, int taskId) async {
     return await _wellRepo.addWell(name, description, comment, lineId, taskId);
   }
+  
+  Future<void> updateWell(int id, String name, String description, String comment) async {
+    return await _wellRepo.updateWell(id, name, description, comment);
+  }
 
   Future<void> addWellPhoto(int wellID, String photoPath) async {
     return await _wellRepo.addWellPhoto(wellID, photoPath);

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_application_1/views/geology/home_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,27 +21,16 @@ class MyApp extends StatelessWidget {
 
   loginState() async{
     final storage = FlutterSecureStorage();
-    String? _userID = await storage.read(key: "userID");
+    String? _userID = await storage.read(key: "accessToken");
   }
-
-  final String? _userID = "";
 
   @override
   Widget build(BuildContext context) {
-    // return FutureBuilder(
-    //   // future: StorageService().readSecureData("userID"),
-    //   future: loginState(),
-    //   builder: (BuildContext context, AsyncSnapshot<String?> userID) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Геология',
-          home: SplashScreen(),
-          // home: (_userID != null) ? HomePage(userID: _userID,) : LoginPage(title: 'Авторизация')
-        );
-        // return userID != null
-        // ?HomePage(userID: "asdasd",)
-        // :LoginPage(title: "Авторизация");
-      // });    // home: LoginPage(title: 'Геология страница'),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Геология',
+      home: SplashScreen(),
+    );
   }
 }
 
@@ -62,21 +52,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    _startApp();
     super.initState();
-    // Timer(Duration(seconds: 2),
-    //         ()=>Navigator.pushReplacement(context,
-    //         MaterialPageRoute(builder:
-    //             (context) =>
-    //             HomePage()
-    //         )
-    //     )
-    // );
+    _startApp();
   }
 
   Future<void> _startApp() async {
     final storage = FlutterSecureStorage();
-    String? userID = await storage.read(key: "userID");
+
+    String? userID = await StorageService().readSecureData("accessToken");
+
     if (userID == null) {
       await Navigator.push(
         context, MaterialPageRoute(builder: (_) => LoginPage(title: "Авторизация")));
@@ -88,19 +72,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text("Загрузка..."),
-      ),
-    );
+    return FutureBuilder(
+      future: loginState(),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        return _userID != null?
+        HomePage()
+        :LoginPage(title: "Авторизация");
+    },);
   }
-  // @override
-  // Widget build(BuildContext context) {
-  //   return FutureBuilder(
-  //     future: loginState(),
-  //     builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-  //       return _userID != null?HomePage(userID: snapshot.data)
-  //       :LoginPage(title: "Авторизация");
-  //   },);
-  // }
 }

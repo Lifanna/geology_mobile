@@ -1,13 +1,15 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/geology/task_page.dart';
 
-class ErrorDialog extends StatelessWidget {
+class FunctionalBlurryDialog extends StatelessWidget {
 
   String title;
   String content;
+  Function()? continueCallBackBool;
 
-  ErrorDialog(this.title, this.content);
+  FunctionalBlurryDialog(this.title, this.content, this.continueCallBackBool);
   TextStyle textStyle = TextStyle (color: Colors.black);
 
   @override
@@ -19,7 +21,14 @@ class ErrorDialog extends StatelessWidget {
         content: Text(content, style: textStyle,),
         actions: <Widget>[
           TextButton(
-            child: Text("Закрыть", style: TextStyle(color: Colors.red),),
+            child: Text("Продолжить", style: TextStyle(color: Colors.green)),
+            onPressed: () {
+              continueCallBackBool!();
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text("Отмена", style: TextStyle(color: Colors.red),),
             onPressed: () {
               Navigator.of(context).pop();
             },

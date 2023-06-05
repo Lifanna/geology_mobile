@@ -23,6 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  bool passwordVisible = true;
+  bool _isLoading = false;
+  bool _isError = false;
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -57,11 +61,23 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.all(10),
               child: TextField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: passwordVisible,
                   decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Пароль пользователя',
                   hintText: 'Введите ваш пароль',
+                  suffixIcon: IconButton(
+                     icon: Icon(passwordVisible
+                         ? Icons.visibility
+                         : Icons.visibility_off),
+                     onPressed: () {
+                       setState(
+                         () {
+                           passwordVisible = !passwordVisible;
+                         },
+                       );
+                     },
+                   ),
                 ),
               ),
             ),
@@ -81,26 +97,56 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
+                  setState(() {
+                      _isLoading = true;
+                      _isError = false;
+                    });
+
                   String username = usernameController.text;
                   String password = passwordController.text;
 
                   StatusCode statusCode = await widget._homeController.loginUser(username, password);
 
                   if (statusCode.statusCode == "200") {
+                    setState(() {
+                      _isLoading = false;
+                      _isError = false;
+                    });
                     Navigator.push(
                       context, MaterialPageRoute(builder: (_) => HomePage()));
                   }
                   else {
-                     
+                    setState(() {
+                      _isLoading = false;
+                      _isError = true;
+                    });
                   }
                 },
-                child: Text(
+                child: _isLoading ?
+                Container(
+                  width: 24,
+                  height: 24,
+                  padding: const EdgeInsets.all(2.0),
+                  child: const CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 3,
+                  ),
+                ) : Text(
                   'Войти',
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
             ),
             SizedBox(
+              child: Visibility(
+                visible: _isError,
+                child: Text(
+                  "Произошла ошибка, повторите позднее",
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                  )
+                ),
+              ),
               height: 130,
             ),
           ],

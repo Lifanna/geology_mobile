@@ -23,12 +23,13 @@ class UserRepository implements IUserRepository {
   Future<StatusCode> login(String username, String password) async {
     UserLogin userLogin = UserLogin(username: username, password: password);
     StatusCode statusCode = await loginApi(userLogin);
-    Token token = statusCode.token!;
-    Map<String, dynamic> userCreds = token.fetchUser(token.token);
-
-    StorageService().writeSecureData(StorageItem("accessToken", token.token));
-    StorageService().writeSecureData(StorageItem("refreshToken", token.refreshToken));
-    StorageService().writeSecureData(StorageItem("userID", userCreds.values.last.toString()));
+    Token? token = statusCode.token;
+    if (token != null) {
+      Map<String, dynamic> userCreds = token.fetchUser(token.token);
+      StorageService().writeSecureData(StorageItem("accessToken", token.token));
+      StorageService().writeSecureData(StorageItem("refreshToken", token.refreshToken));
+      StorageService().writeSecureData(StorageItem("userID", userCreds.values.last.toString()));
+    }
 
     return statusCode;
   }

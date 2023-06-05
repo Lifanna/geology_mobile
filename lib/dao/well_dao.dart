@@ -93,4 +93,12 @@ class WellDao {
 
     int lastId = await db.update("main_well", wellPhotoDatabaseJson, where: "id=?", whereArgs: [wellID]);
   }
+
+  Future<void> updateWell(Well well) async {
+    final db = await dbProvider.database;
+
+    var wellDatabaseJson = well.toUpdateDatabaseJson(well);
+
+    int lastId = await db.update("main_well", wellDatabaseJson, where: "id=?", whereArgs: [well.id]);
+  }
 }

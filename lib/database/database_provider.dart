@@ -112,6 +112,7 @@ class DatabaseProvider {
     CREATE TABLE IF NOT EXISTS "main_layer" (
 	"id"	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 	"name"	varchar(255) NOT NULL,
+  "depth" real NOT NULL,
 	"created_at"	datetime NOT NULL,
 	"updated_at"	datetime NOT NULL,
 	"layer_material_id"	bigint NOT NULL,
@@ -159,6 +160,17 @@ static const main_task = """
 	FOREIGN KEY("responsible_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("status_id") REFERENCES "main_taskstatus"("id") DEFERRABLE INITIALLY DEFERRED
 );""";
+static const main_taskimagesingle = """
+  CREATE TABLE "main_taskimagesingle" (
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+    "image" varchar(100) NULL
+)""";
+static const main_taskimage = """
+  CREATE TABLE "main_taskimage" (
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, 
+    "task_id" bigint NULL REFERENCES "main_task" ("id") DEFERRABLE INITIALLY DEFERRED, 
+    "task_image_single_id" bigint NULL REFERENCES "main_taskimagesingle" ("id") DEFERRABLE INITIALLY DEFERRED
+);""";
 static const main_welltask = """
   CREATE TABLE IF NOT EXISTS "main_welltask" (
 	"id"	integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -184,12 +196,8 @@ static const main_license = """
 	"created_at"	datetime NOT NULL,
 	"updated_at"	datetime NOT NULL,
 	"geologist_id"	bigint,
-	"mbu_id"	bigint,
-	"pmbou_id"	bigint,
 	"status_id"	bigint NOT NULL,
 	FOREIGN KEY("geologist_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY("mbu_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-	FOREIGN KEY("pmbou_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("status_id") REFERENCES "main_licensestatus"("id") DEFERRABLE INITIALLY DEFERRED
 );""";
 static const main_linelicensewatercourse = """
@@ -325,12 +333,6 @@ static const indexes = """
   CREATE INDEX IF NOT EXISTS "main_license_status_id_a44fdbf5" ON "main_license" (
     "status_id"
   );
-  CREATE INDEX IF NOT EXISTS "main_license_pmbou_id_3d25be14" ON "main_license" (
-    "pmbou_id"
-  );
-  CREATE INDEX IF NOT EXISTS "main_license_mbu_id_8268238b" ON "main_license" (
-    "mbu_id"
-  );
   CREATE INDEX IF NOT EXISTS "main_license_geologist_id_5e8f1352" ON "main_license" (
     "geologist_id"
   );
@@ -367,6 +369,8 @@ static const indexes = """
     await database.execute(main_layer);
     await database.execute(main_well);
     await database.execute(main_task);
+    await database.execute(main_taskimagesingle);
+    await database.execute(main_taskimage);
     await database.execute(main_welltask);
     await database.execute(main_layermaterial);
     await database.execute(main_license);
@@ -497,12 +501,8 @@ static const indexes = """
 // 	"created_at"	datetime NOT NULL,
 // 	"updated_at"	datetime NOT NULL,
 // 	"geologist_id"	bigint,
-// 	"mbu_id"	bigint,
-// 	"pmbou_id"	bigint,
 // 	"status_id"	bigint NOT NULL,
 // 	FOREIGN KEY("geologist_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-// 	FOREIGN KEY("mbu_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
-// 	FOREIGN KEY("pmbou_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
 // 	FOREIGN KEY("status_id") REFERENCES "main_licensestatus"("id") DEFERRABLE INITIALLY DEFERRED
 // );""";
 // static const main_linelicensewatercourse = """
@@ -637,12 +637,6 @@ static const indexes = """
 //   );
 //   CREATE INDEX IF NOT EXISTS "main_license_status_id_a44fdbf5" ON "main_license" (
 //     "status_id"
-//   );
-//   CREATE INDEX IF NOT EXISTS "main_license_pmbou_id_3d25be14" ON "main_license" (
-//     "pmbou_id"
-//   );
-//   CREATE INDEX IF NOT EXISTS "main_license_mbu_id_8268238b" ON "main_license" (
-//     "mbu_id"
 //   );
 //   CREATE INDEX IF NOT EXISTS "main_license_geologist_id_5e8f1352" ON "main_license" (
 //     "geologist_id"

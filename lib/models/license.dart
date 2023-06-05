@@ -24,10 +24,6 @@ class License {
 
   late String used_enginery;
 
-  late User mbu;
-
-  late User pmbou;
-
   // late List<WaterCourse> watercourses;
 
   late List<Line> lines;
@@ -55,8 +51,6 @@ class License {
     license.geologist = User.fromJson(data['geologist']);
     license.status = data['status'];
     license.used_enginery = data['used_enginery'];
-    license.mbu = User.fromJson(data['mbu']);
-    license.pmbou = User.fromJson(data['pmbou']);
     // license.this.watercourses = data['watercourses'];
     license.lines = lines;
     license.comment = data['comment'];

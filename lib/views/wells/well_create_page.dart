@@ -66,7 +66,7 @@ class WellCreatePageState extends State<WellCreatePage> {
                     controller: _nameController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Наименование',
+                      labelText: 'Номер',
                       hintText: 'Введите наименование скважины'
                     ),
                   ),

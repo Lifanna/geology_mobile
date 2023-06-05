@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/layer_controller.dart';
 import 'package:flutter_application_1/controllers/well_controller.dart';
+import 'package:flutter_application_1/dialogs/messageBoxDialog.dart';
 import 'package:flutter_application_1/models/layer.dart';
 import 'package:flutter_application_1/models/well.dart';
 import 'package:flutter_application_1/views/geology/task_page.dart';
@@ -58,6 +59,14 @@ class WellIndexPageState extends State<WellIndexPage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    var saveBtn = SizedBox(
+      width: width,
+      child: Text(
+        "Сохранить",
+        textAlign: TextAlign.center,
+      )
+    );
+
     var addLayerBtn = SizedBox(
       width: width,
       child: Text(
@@ -101,10 +110,10 @@ class WellIndexPageState extends State<WellIndexPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                child: SizedBox(
-                  height: 80,
+              SizedBox(
+                height: 100,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
                   child: TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
@@ -114,10 +123,10 @@ class WellIndexPageState extends State<WellIndexPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  height: 30,
+              SizedBox(
+                height: 50,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
                   child: Row(
                     children: [
                       Text(
@@ -128,10 +137,10 @@ class WellIndexPageState extends State<WellIndexPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  height: 30,
+              SizedBox(
+                height: 50,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
                   child: Row(
                     children: [
                       Text(
@@ -142,54 +151,60 @@ class WellIndexPageState extends State<WellIndexPage> {
                   ),
                 ),
               ),
-              Padding (
-                padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
-                child: SizedBox(
-                  height: 150,
-                  child: FutureBuilder<List<Layer>>(
-                    future: getLayers(), // Here you run the check for all queryRows items and assign the fromContact property of each item
-                    builder: (context, snapshot) {
-                      return ListView.builder(
-                        itemCount: _layers.length,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: ListTile(
-                              title: Text(_layers[index].name),
-                              subtitle: Text(_layers[index].description),
-                              onTap: () {
-                                Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => LayerIndexPage(
-                                    currentLayer: _layers[index], taskID: widget.taskID, wellID: widget.wellID
-                                )));
-                              },
-                            )
-                          );
-                        }
-                      );
-                    }
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  height: 100,
-                  child: TextField(
-                      controller: _descriptionController,
-                      decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Описание',
+              SizedBox(
+                height: 150,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+                  child: SizedBox(
+                    height: 150,
+                    child: FutureBuilder<List<Layer>>(
+                      future: getLayers(), // Here you run the check for all queryRows items and assign the fromContact property of each item
+                      builder: (context, snapshot) {
+                        return ListView.builder(
+                          itemCount: _layers.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              child: ListTile(
+                                title: Text(_layers[index].name),
+                                subtitle: Text(_layers[index].description),
+                                onTap: () {
+                                  Navigator.push(
+                                    context, MaterialPageRoute(builder: (_) => LayerIndexPage(
+                                      currentLayer: _layers[index], taskID: widget.taskID, wellID: widget.wellID
+                                  )));
+                                },
+                              )
+                            );
+                          }
+                        );
+                      }
                     ),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 4,
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  height: 100,
-                  child: TextField(
+              SizedBox(
+                height: 100,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: SizedBox(
+                    height: 100,
+                    child: TextField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Описание',
+                      ),
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 4,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                    child: TextField(
                     controller: _commentController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
@@ -201,9 +216,37 @@ class WellIndexPageState extends State<WellIndexPage> {
                 ),
               ),
               SizedBox(
-                height: 150,
+                height: 200,
                 child: Column(
                   children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      child: ElevatedButton(
+                        child: saveBtn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
+                        onPressed: () async {
+                          widget._wellController.updateWell(widget.wellID, _nameController.text, _descriptionController.text,
+                          _commentController.text);
+
+                          continueCallBack() => {
+                              Navigator.pop(context),
+                              Navigator.push(
+                                context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
+                          };
+
+                          BlurryDialog alert = BlurryDialog("Сообщение", "Скважина успешно обновлена!", continueCallBack);
+
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return alert;
+                            },
+                          );
+                        },
+                      ),
+                    ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: ElevatedButton(

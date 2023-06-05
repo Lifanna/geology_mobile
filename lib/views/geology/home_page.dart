@@ -70,14 +70,14 @@ class HomePageState extends State<HomePage> {
     String string;
     switch (_source.keys.toList()[0]) {
       case ConnectivityResult.mobile:
-        string = 'Mobile: Online';
+        string = 'Интернет доступен';
         break;
       case ConnectivityResult.wifi:
-        string = 'WiFi: Online';
+        string = 'Интернет доступен';
         break;
       case ConnectivityResult.none:
       default:
-        string = 'Offline';
+        string = 'Оффлайн';
     }
 
     return Scaffold(
@@ -150,7 +150,7 @@ class HomePageState extends State<HomePage> {
                           // leading: CircleAvatar(
                           //     backgroundImage: NetworkImage(
                           //         "https://images.unsplash.com/photo-1547721064-da6cfb341d50")),
-                          trailing: Icon(icons[index])
+                          // trailing: Icon(icons[index])
                         )
                       );
                     }

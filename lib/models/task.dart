@@ -1,5 +1,6 @@
 import 'package:flutter_application_1/models/license.dart';
 import 'package:flutter_application_1/models/line.dart';
+import 'package:flutter_application_1/models/task_image.dart';
 import 'package:flutter_application_1/models/user_model.dart';
 import 'package:flutter_application_1/models/watercourse.dart';
 import 'package:flutter_application_1/models/well.dart';
@@ -53,6 +54,8 @@ class Task {
 
   late TaskStatus status;
 
+  late List<TaskImage> taskImages;
+
   late String comment;
 
   late String created_at;
@@ -67,10 +70,15 @@ class Task {
     );
 
     List<Well> wells = [];
-    // List<Map<dynamic, dynamic>> wellsJson = ;
     data['wells'].forEach((wellJson) {
       Well well = Well.fromJson(wellJson);
       wells.add(well);
+    });
+
+    List<TaskImage> taskImages = [];
+    data['images'].forEach((taskImagesJson) {
+      TaskImage taskImage = TaskImage.fromJson(taskImagesJson, data['id']);
+      taskImages.add(taskImage);
     });
 
     Task task = Task();
@@ -80,8 +88,10 @@ class Task {
     task.license = license;
     task.line = Line.fromJson(data['line']);
     task.wells = wells;
+    task.taskImages = taskImages;
     task.responsible = User.fromJson(data['responsible']);
     task.status = TaskStatus.fromJson(data['status']);
+    task.comment = data['comment'];
     task.comment = data['comment'];
     task.created_at = data['created_at'];
     task.updated_at = data['updated_at'];

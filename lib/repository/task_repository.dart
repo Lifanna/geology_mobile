@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_application_1/dao/task_dao.dart';
 import 'package:flutter_application_1/models/storage_item.dart';
 import 'package:flutter_application_1/models/task.dart';
+import 'package:flutter_application_1/models/task_image.dart';
 import 'package:flutter_application_1/models/well.dart';
 import 'package:flutter_application_1/repository/task_interface.dart';
 import 'package:flutter_application_1/services/status_code.dart';
@@ -27,6 +28,11 @@ class TaskRepository implements ITaskRepository {
 
     for (var task in tasks) {
       taskDao.addTaskToDb(task);
+      if (task.taskImages.length > 0){
+        for (var taskImage in task.taskImages) {
+          taskDao.addTaskImagesToDb(taskImage);
+        }
+      }
     }
 
     return tasks;
@@ -57,5 +63,15 @@ class TaskRepository implements ITaskRepository {
   @override
   Future<void> completeTask(int taskId) async {
     return await taskDao.completeTask(taskId);
+  }
+
+  @override
+  Future<bool> checkTaskCompleteness(int taskId) async {
+    return await taskDao.checkWellPillarPhoto(taskId);
+  }
+
+  @override
+  Future<List<TaskImage>> getTaskImages(int taskID) async {
+    return await taskDao.getTaskImages(taskID);
   }
 }
