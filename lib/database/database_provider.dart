@@ -155,6 +155,8 @@ static const main_task = """
 	"line_id"	bigint NOT NULL,
 	"responsible_id"	bigint NOT NULL,
 	"status_id"	bigint NOT NULL,
+	"watercourse_id" int,
+	"watercourse_name" varchar(255),
 	FOREIGN KEY("license_id") REFERENCES "main_license"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("line_id") REFERENCES "main_line"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("responsible_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
@@ -196,7 +198,7 @@ static const main_license = """
 	"created_at"	datetime NOT NULL,
 	"updated_at"	datetime NOT NULL,
 	"geologist_id"	bigint,
-	"status_id"	bigint NOT NULL,
+	"status_id",
 	FOREIGN KEY("geologist_id") REFERENCES "main_customuser"("id") DEFERRABLE INITIALLY DEFERRED,
 	FOREIGN KEY("status_id") REFERENCES "main_licensestatus"("id") DEFERRABLE INITIALLY DEFERRED
 );""";
@@ -667,7 +669,6 @@ static const indexes = """
 //   );""";
 
 //   // Future<Database> initDB() async {
-//   //   print("initDB executed");
 //   //   //Directory documentsDirectory = await getApplicationDocumentsDirectory();
 //   //   String path = join(await getDatabasesPath(), "db.sqlite3");
 //   //   await deleteDatabase(path);

@@ -32,7 +32,6 @@ class WellDao {
 
     List<Map<String, dynamic>> result;
 
-    final String wellsTable = 'main_well';
     result = await db.rawQuery("""
       SELECT well_id, mw.name as well_name, mw.description as well_description, comment, 
       mw.line_id as line_id, ml.name as line_name, mw.created_at, mw.updated_at 
@@ -41,16 +40,14 @@ class WellDao {
       mwt.well_id = mw.id
       JOIN main_line ml ON 
       mw.line_id = ml.id
-      WHERE mwt.task_id = ${taskId} AND mw.id = ${wellId}
+      WHERE mwt.task_id = $taskId AND mw.id = $wellId
     """);
 
-    Well? well;
-
     if (result.isNotEmpty) {
-      well = Well.fromDatabaseJson(result.first);
+      return Well.fromDatabaseJson(result.first);
     }
 
-    return well;
+    return null;
   }
 
   Future<List<Map<String, dynamic>>> getWellTask(int wellId, int taskId) async {

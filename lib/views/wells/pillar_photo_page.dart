@@ -7,10 +7,12 @@ import 'package:flutter_application_1/views/wells/pillar_photo_preview_page.dart
 class PillarPhotoPage extends StatefulWidget {
   final int taskID;
   final int wellID;
+  final String short_name;
+  final String line_name;
   final List<CameraDescription>? cameras;
 
   const PillarPhotoPage(
-    {Key? key, required this.cameras, required this.taskID, required this.wellID}) : super(key:key);
+    {Key? key, required this.cameras, required this.taskID, required this.wellID, required this.short_name, required this.line_name}) : super(key:key);
 
   @override
   PillarPhotoPageState createState() => PillarPhotoPageState();
@@ -53,6 +55,8 @@ class PillarPhotoPageState extends State<PillarPhotoPage> {
                           picture: picture,
                           taskID: widget.taskID,
                           wellID: widget.wellID,
+                          short_name: widget.short_name,
+                          line_name: widget.line_name,
                         )));
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');

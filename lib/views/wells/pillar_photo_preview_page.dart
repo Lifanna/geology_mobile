@@ -11,9 +11,11 @@ import 'package:permission_handler/permission_handler.dart';
 class PillarPhotoPreviewPage extends StatefulWidget {
   final int taskID;
   final int wellID;
+  final String short_name;
+  final String line_name;
   final XFile picture;
 
-  PillarPhotoPreviewPage({required this.picture, required this.taskID, required this.wellID});
+  PillarPhotoPreviewPage({required this.picture, required this.taskID, required this.wellID, required this.short_name, required this.line_name});
 
   WellController _wellController = WellController();
 
@@ -120,7 +122,7 @@ class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
                               continueCallBack() => {
                                 Navigator.pop(context),
                                 Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
+                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,))),
                               };
                               BlurryDialog alert = BlurryDialog("Сообщение", "Фото успешно сохранено!", continueCallBack);
                               showDialog(
@@ -144,7 +146,7 @@ class PillarPhotoPreviewPageState extends State<PillarPhotoPreviewPage> {
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.push(
-                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,)));
+                                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,)));
                         },
                       ),
                     ),

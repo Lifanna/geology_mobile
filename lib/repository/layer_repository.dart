@@ -81,7 +81,6 @@ class LayerRepository implements ILayerRepository {
   Future<void> updateLayer(
     int id, String name, String description, String material, String comment, bool sampleObtained, bool aquifer, bool drillingStopped
   ) async {
-    print("SICCCCCCHHHHHHHHHHHHHHHH");
 
     LayerMaterial layerMaterial = LayerMaterial();
     layerMaterial.name = material;

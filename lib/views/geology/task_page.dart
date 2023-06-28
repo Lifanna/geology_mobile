@@ -11,6 +11,7 @@ import 'package:flutter_application_1/models/task_image_single.dart';
 import 'package:flutter_application_1/models/well.dart';
 import 'package:flutter_application_1/views/detail_pages/detail_screen.dart';
 import 'package:flutter_application_1/views/geology/home_page.dart';
+import 'package:flutter_application_1/views/geology/task_images_page.dart';
 import 'package:flutter_application_1/views/layers/layer_list_page.dart';
 import 'package:flutter_application_1/views/wells/well_create_page.dart';
 import 'package:flutter_application_1/views/wells/well_index_page.dart';
@@ -18,9 +19,10 @@ import 'package:flutter_application_1/views/wells/well_index_page.dart';
 
 class TaskPage extends StatefulWidget {
   final int taskID;
+  final String short_name;
   final TaskController _tasksController = TaskController();
 
-  TaskPage({required this.taskID});
+  TaskPage({required this.taskID, required this.short_name});
   @override
   TaskPageState createState() => TaskPageState();
 }
@@ -40,10 +42,11 @@ class TaskPageState extends State<TaskPage> {
 
   Future<void> getTask() async {
     Task? task = await widget._tasksController.getTaskById(widget.taskID);
-    // task.description = "AZAZA";
     setState(() {
-      if (task != null)
+      if (task != null){
         _task = task;
+      }
+        
     });
   }
 
@@ -56,8 +59,6 @@ class TaskPageState extends State<TaskPage> {
   Future<List<TaskImage>> getTaskImages() async {
     _images = await widget._tasksController.getTaskImages(widget.taskID);
 
-    print("FFFFFFFFFFFFFFFFFFFOT ONI:         ${_images.first.taskImageSingle.localUrl}");
-
     return _images;
   }
 
@@ -66,10 +67,17 @@ class TaskPageState extends State<TaskPage> {
     double width = MediaQuery.of(context).size.width;
     var addWellBtn = SizedBox(
       width: width,
-      child: Text(
-        "Добавить скважину",
-        textAlign: TextAlign.center,
-      )
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.center,
+        children: [
+          Icon(Icons.add),
+          Text(
+            " скважину",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
     var completeBtn = SizedBox(
       width: width,
@@ -79,20 +87,40 @@ class TaskPageState extends State<TaskPage> {
       )
     );
 
-    var backBtn = SizedBox(
-      width: width,
-      child: Text(
-        "Назад",
-        textAlign: TextAlign.center,
-      )
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Бурение"),
+        title: Text(widget.short_name),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () { 
+            // Navigator.pop(context);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => HomePage()));
+          },
+        ),
       ),
       body: ListView(
         children: <Widget>[
+          SizedBox(
+            height: 110,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Лицензия: " + (_task?.license.name ?? "") + "\nЛиния: " + (_task?.line.name ?? "") + "\nВодоток: " + (_task?.watercourse.name ?? ""),
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Описание задания"
+              ),
+            ),
+          ),
           SizedBox(
             height: 100,
             child: Padding(
@@ -107,6 +135,21 @@ class TaskPageState extends State<TaskPage> {
           ),
           SizedBox(
             height: 100,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: IconButton(
+                icon: Image.asset('assets/map.jpg'),
+                iconSize: 50,
+                onPressed: () {
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => TaskImagesPage(
+                      taskID: widget.taskID, short_name: widget.short_name,
+                  )));
+                },
+              ),
+            ),
+          ),
+          Container(
             child: Padding(
               padding: EdgeInsets.all(10),
               child: Text(
@@ -124,12 +167,31 @@ class TaskPageState extends State<TaskPage> {
                   itemBuilder: (context, index) {
                     return Card(
                       child: ListTile(
-                        title: Text(_wells[index].name),
-                        subtitle: Text(_wells[index].description),
+                        title: Flex(
+                          direction: Axis.horizontal,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text(_wells[index].name),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(_wells[index].description),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.centerRight,
+                                child: _wells[index].layer_comment.replaceAll(" ", "") != "" ? Icon(Icons.comment) : Text(""),
+                              ),
+                            ),
+                          ],
+                        ),
                         onTap: () {
                           Navigator.push(
                             context, MaterialPageRoute(builder: (_) => WellIndexPage(
-                              wellID: _wells[index].id, taskID: widget.taskID,
+                              wellID: _wells[index].id, taskID: widget.taskID, short_name: widget.short_name, line_name: _task!.line.name,
                           )));
                         },
                       )
@@ -138,41 +200,6 @@ class TaskPageState extends State<TaskPage> {
                 );
               }
             )
-          ),
-          SizedBox(
-            height: 40,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                "Фотографии к заданию"
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 210,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: FutureBuilder<List<TaskImage>>(
-                future: getTaskImages(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: _images.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: GestureDetector(
-                          child: Image.file(File(_images[index].taskImageSingle.localUrl)),
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) {
-                              return DetailScreen(imagePath: _images[index].taskImageSingle.localUrl);
-                            }));
-                          },
-                        )
-                      );
-                    }
-                  );
-                }
-              ),
-            ),
           ),
           SizedBox(
             child: Padding(
@@ -184,23 +211,7 @@ class TaskPageState extends State<TaskPage> {
                 ),
                 onPressed: () {
                   Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => WellCreatePage(lineID: _task?.line.id ?? 0, taskID: _task?.id ?? 0,)));
-                },
-              ),
-            ),
-          ),
-          SizedBox(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              child: ElevatedButton(
-                child: backBtn,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => HomePage()));
+                    context, MaterialPageRoute(builder: (_) => WellCreatePage(lineID: _task?.line.id ?? 0, taskID: _task?.id ?? 0, short_name: widget.short_name,)));
                 },
               ),
             ),

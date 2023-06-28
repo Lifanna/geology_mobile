@@ -6,9 +6,10 @@ import 'package:flutter_application_1/views/geology/task_page.dart';
 class WellCreatePage extends StatefulWidget {
   final int lineID;
   final int taskID;
+  final String short_name;
   final WellController _wellController = WellController();
 
-  WellCreatePage({required this.lineID, required this.taskID});
+  WellCreatePage({required this.lineID, required this.taskID, required this.short_name});
 
   @override
   WellCreatePageState createState() => WellCreatePageState();
@@ -45,7 +46,13 @@ class WellCreatePageState extends State<WellCreatePage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () { 
-            Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            Navigator.pop(context);
+            Navigator.push(
+              context, MaterialPageRoute(builder: (_) => TaskPage(
+                taskID: widget.taskID,
+                short_name: widget.short_name,
+            )));
           }, ),
       ),
       body: Listener(
@@ -58,8 +65,7 @@ class WellCreatePageState extends State<WellCreatePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              SizedBox(
-                height: 150,
+              Container(
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -72,8 +78,7 @@ class WellCreatePageState extends State<WellCreatePage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 150,
+              Container(
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -88,8 +93,7 @@ class WellCreatePageState extends State<WellCreatePage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 150,
+              Container(
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -104,8 +108,7 @@ class WellCreatePageState extends State<WellCreatePage> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 150,
+              Container(
                 child: Column(
                   children: [
                     Padding(
@@ -123,22 +126,25 @@ class WellCreatePageState extends State<WellCreatePage> {
                           widget._wellController.addWell(name, description, comment, lineId, widget.taskID);
 
                           Navigator.push(
-                            context, MaterialPageRoute(builder: (_) => TaskPage(taskID: widget.taskID,)));
+                            context, MaterialPageRoute(builder: (_) => TaskPage(
+                              taskID: widget.taskID,
+                              short_name: name,
+                            )));
                         },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: ElevatedButton(
-                        child: backBtn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    //   child: ElevatedButton(
+                    //     child: backBtn,
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.green,
+                    //     ),
+                    //     onPressed: () {
+                    //       Navigator.pop(context);
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

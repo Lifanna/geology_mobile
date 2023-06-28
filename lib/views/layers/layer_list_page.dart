@@ -8,9 +8,11 @@ import 'package:flutter_application_1/views/layers/layer_index_page.dart';
 class LayerListPage extends StatefulWidget {
   final int taskID;
   final int wellID;
+  final String short_name;
+  final String line_name;
   final LayerController _layerController = LayerController();
 
-  LayerListPage({required this.taskID, required this.wellID});
+  LayerListPage({required this.taskID, required this.wellID, required this.short_name, required this.line_name});
   @override
   LayerListPageState createState() => LayerListPageState();
 }
@@ -58,7 +60,7 @@ class LayerListPageState extends State<LayerListPage> {
                         onTap: () {
                           Navigator.push(
                             context, MaterialPageRoute(builder: (_) => LayerIndexPage(
-                              currentLayer: _layers[index], taskID: widget.taskID, wellID: widget.wellID
+                              currentLayer: _layers[index], taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,
                           )));
                         },
                       )
@@ -75,7 +77,7 @@ class LayerListPageState extends State<LayerListPage> {
             ),
             onPressed: () {
               Navigator.push(
-                context, MaterialPageRoute(builder: (_) => LayerCreatePage(taskID: widget.taskID, wellID: widget.wellID,)));
+                context, MaterialPageRoute(builder: (_) => LayerCreatePage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,)));
             },
           ),
         ],

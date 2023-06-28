@@ -62,6 +62,8 @@ class Task {
 
   late String updated_at;
 
+  late WaterCourse watercourse;
+
   Task();
 
   factory Task.fromJson(Map<dynamic, dynamic> data) {
@@ -81,6 +83,15 @@ class Task {
       taskImages.add(taskImage);
     });
 
+
+    WaterCourse watercourse = WaterCourse();
+    data['license']['watercourses'].forEach((watercoursesJson) {
+      watercourse.id = watercoursesJson['id'];
+      watercourse.name = watercoursesJson['name'];
+      watercourse.created_at = watercoursesJson['created_at'];
+      watercourse.updated_at = watercoursesJson['updated_at'];
+    });
+
     Task task = Task();
     task.id = data['id'];
     task.short_name = data['short_name'];
@@ -89,6 +100,7 @@ class Task {
     task.line = Line.fromJson(data['line']);
     task.wells = wells;
     task.taskImages = taskImages;
+    task.watercourse = watercourse;
     task.responsible = User.fromJson(data['responsible']);
     task.status = TaskStatus.fromJson(data['status']);
     task.comment = data['comment'];
@@ -106,6 +118,8 @@ class Task {
       'description': task.description,
       'license_id': task.license.id,
       'line_id': task.line.id,
+      'watercourse_id': task.watercourse.id,
+      'watercourse_name': task.watercourse.name,
       'responsible_id': task.responsible.id,
       'status_id': task.status.id,
       'comment': task.comment,
@@ -123,7 +137,10 @@ class Task {
     task.short_name = dbJson['short_name'];
     task.description = dbJson['description'];
     task.license = License.fromTaskJson(dbJson['license_id']);
+    task.license.name = dbJson['license_name'];
+    task.watercourse = WaterCourse.fromDatabaseJson(dbJson);
     task.line = Line.fromDatabaseJson(dbJson);
+    task.line.name = dbJson['line_name'];
     // task.wells = wells;
     task.responsible = User.fromJson(dbJson);
     task.status = TaskStatus.fromDatabaseJson(dbJson);

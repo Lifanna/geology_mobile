@@ -5,12 +5,14 @@ class LineDao {
   final dbProvider = DatabaseProvider.dbProvider;
 
 
-  Future<void> addLineToDb(Line line) async {
+  Future<int> addLineToDb(Line line) async {
     final db = await dbProvider.database;
 
     var lineDatabaseJson = line.toDatabaseJson(line);
 
     int lastId = await db.insert("main_line", lineDatabaseJson);
+
+    return lastId;
   }
 
   Future<Line?> getLineById(int id) async {

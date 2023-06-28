@@ -91,8 +91,6 @@ class LayerDao {
 
     var layerDatabaseJson = layer.toUpdateDatabaseJson(layer);
 
-    print("QQQQQQQQQWWW: ${layerDatabaseJson}");
-
     int lastId = await db.update("main_layer", layerDatabaseJson, where: "id=?", whereArgs: [layer.id]);
   }
 
@@ -107,7 +105,6 @@ class LayerDao {
     var layerMaterialExists = await db.query("main_layermaterial", where: "name=?", whereArgs: [layerMaterial.name]);
 
     if (layerMaterialExists.isEmpty){
-      print("CRUEL SUMMER: ${layerMaterialExists}");
       int lastId = await db.insert("main_layermaterial", layerDatabaseJson);
     }
   }

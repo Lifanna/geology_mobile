@@ -12,10 +12,12 @@ import 'package:flutter_application_1/views/wells/well_index_page.dart';
 class LayerIndexPage extends StatefulWidget {
   final int taskID;
   final int wellID;
+  final String short_name;
+  final String line_name;
   final Layer currentLayer;
   final LayerController _layerController = LayerController();
 
-  LayerIndexPage({required this.currentLayer, required this.taskID, required this.wellID});
+  LayerIndexPage({required this.currentLayer, required this.taskID, required this.wellID, required this.short_name, required this.line_name});
 
   @override
   LayerIndexPageState createState() => LayerIndexPageState();
@@ -111,7 +113,7 @@ class LayerIndexPageState extends State<LayerIndexPage> {
                     controller: _nameController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Глубина',
+                      labelText: 'Глубина забоя, м',
                       hintText: 'Введите глубину интервала'
                     ),
                     keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -251,7 +253,7 @@ class LayerIndexPageState extends State<LayerIndexPage> {
                           continueCallBack() => {
                               Navigator.pop(context),
                               Navigator.push(
-                                context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
+                                context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,))),
                           };
 
                           BlurryDialog alert = BlurryDialog("Сообщение", "Интервал успешно обновлен!", continueCallBack);
@@ -274,7 +276,7 @@ class LayerIndexPageState extends State<LayerIndexPage> {
                         ),
                         onPressed: () {
                           Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,)));
+                  context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,)));
                         },
                         child: backBtn,
                       ),

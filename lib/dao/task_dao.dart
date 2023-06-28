@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter_application_1/dao/license_dao.dart';
 import 'package:flutter_application_1/dao/line_dao.dart';
+import 'package:flutter_application_1/dao/watercourse_dao.dart';
 import 'package:flutter_application_1/dao/well_dao.dart';
 import 'package:flutter_application_1/database/database_provider.dart';
 import 'package:flutter_application_1/models/task.dart';
@@ -15,8 +17,6 @@ class TaskDao {
   Future<void> addTaskToDb(Task task) async {
     final db = await dbProvider.database;
 
-    var taskDatabaseJson = task.toDatabaseJson(task);
-
     final userTable = 'main_task';
     
     var taskExists = await getTaskByShortName(task.short_name);
@@ -24,6 +24,10 @@ class TaskDao {
     var wellDao = WellDao();
 
     var lineDao = LineDao();
+
+    var licenseDao = LicenseDao();
+
+    var watercourseDao = WatercourseDao();
 
     // if (task.wells != []) {
     //   task.wells.forEach((well) {
@@ -34,9 +38,28 @@ class TaskDao {
 
     var lineExists = await lineDao.getLineById(task.line.id);
 
+    int line_id = task.line.id;
+    int license_id = task.license.id;
+    int watercourse_id = task.watercourse.id;
+
     if (lineExists == null){
-      lineDao.addLineToDb(task.line);
+      line_id = await lineDao.addLineToDb(task.line);
     }
+
+    var licenseExists = await licenseDao.getLicenseById(task.line.id);
+
+    if (licenseExists == null){
+      license_id = await licenseDao.addLicenseToDb(task.license);
+    }
+
+    // var watercourseExists = await watercourseDao.getLicenseById(task.line.id);
+
+    // if (watercourseExists == null){
+    //   watercourse_id = await licenseDao.addLicenseToDb(task.license);
+    // }
+
+    task.line.id = line_id;
+    task.license.id = license_id;
 
     var taskStatusIsEmpty = await getTaskStatusById(task.status.id);
 
@@ -49,6 +72,8 @@ class TaskDao {
     }
 
     if (taskExists == null){
+      var taskDatabaseJson = task.toDatabaseJson(task);
+
       int lastId = await db.insert("main_task", taskDatabaseJson);
     }
     else {
@@ -64,7 +89,17 @@ class TaskDao {
     List<Map<String, dynamic>> result;
 
     final String tasksTable = 'main_task';
-    result = await db.query(tasksTable, where: 'id=?', whereArgs: [id]);
+    result = await db.rawQuery("""
+      SELECT 
+        mt.id, mt.short_name, mt.description, mt.line_id, mt.license_id, 
+        mt.created_at, mt.updated_at, mt.watercourse_id,
+        mls.name as license_name, mt.watercourse_name, ml.name as line_name FROM main_task mt
+      JOIN main_license mls ON
+      mls.id = mt.license_id
+      JOIN main_line ml ON
+      ml.id = mt.line_id
+      WHERE mt.id = ${id}
+    """);
     var result2 = await db.query(tasksTable);
 
     if (result.isNotEmpty) {
@@ -100,10 +135,12 @@ class TaskDao {
     result = await db.rawQuery("""
       SELECT 
         mw.id as well_id, mw.description as well_description, 
-        mw.name as well_name  
+        mw.name as well_name, ml.comment as layer_comment 
       FROM main_welltask mwt
       JOIN main_well mw ON
       mw.id = mwt.well_id
+      LEFT JOIN main_layer ml ON
+      ml.well_id = mw.id
       JOIN main_task mt ON
       mt.id = mwt.task_id
       WHERE mwt.task_id = ${taskId}
@@ -248,7 +285,6 @@ class TaskDao {
 
     var splitedUrl = taskImage.taskImageSingle.remoteUrl.split("/");
     taskImage.taskImageSingle.remoteUrl = taskImage.taskImageSingle.remoteUrl.replaceAll('api/tasks/', 'media/');
-    print("AFTERRRRRRRRRRR: ${taskImage.taskId} ${taskImage.taskImageSingle.remoteUrl}");
 
     Uri url = Uri.parse(taskImage.taskImageSingle.remoteUrl);
     var response = await get(url);

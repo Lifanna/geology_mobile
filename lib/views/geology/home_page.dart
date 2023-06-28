@@ -145,6 +145,7 @@ class HomePageState extends State<HomePage> {
                             Navigator.push(
                               context, MaterialPageRoute(builder: (_) => TaskPage(
                                 taskID: _tasks[index].id,
+                                short_name: _tasks[index].short_name,
                             )));
                           },
                           // leading: CircleAvatar(

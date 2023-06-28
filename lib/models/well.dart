@@ -21,6 +21,8 @@ class Well {
 
   late String updated_at;
 
+  late String layer_comment;
+
   Well();
 
   factory Well.fromJson(Map<dynamic, dynamic> data) {
@@ -92,6 +94,7 @@ class Well {
     well.line = line;
     well.created_at = dbJson['created_at'];
     well.updated_at = dbJson['updated_at'];
+    well.layer_comment = dbJson['layer_comment'];
 
     return well;
   }

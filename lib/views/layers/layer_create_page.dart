@@ -8,10 +8,12 @@ import 'package:flutter_application_1/views/wells/well_index_page.dart';
 
 class LayerCreatePage extends StatefulWidget {
   final int taskID;
+  final String short_name;
+  final String line_name;
   final int wellID;
   final LayerController _layerController = LayerController();
 
-  LayerCreatePage({required this.taskID, required this.wellID});
+  LayerCreatePage({required this.taskID, required this.wellID, required this.short_name, required this.line_name});
   @override
   LayerCreatePageState createState() => LayerCreatePageState();
 }
@@ -94,7 +96,10 @@ class LayerCreatePageState extends State<LayerCreatePage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () { 
-            Navigator.of(context).pop();
+            // Navigator.of(context).pop();
+            Navigator.pop(context);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,)));
           }, ),
       ),
       body: Listener(
@@ -115,7 +120,7 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                     controller: _prevDepthController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Предыдущая глубина',
+                      labelText: 'Предыдущая глубина, м',
                     ),
                   ),
                 ),
@@ -124,21 +129,41 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                 height: 100,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
-                  child: TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Глубина',
-                      hintText: 'Введите глубину интервала'
+                  child: Flexible(
+                    flex: 1 /*or any integer value above 0 (optional)*/,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1 /*or any integer value above 0 (optional)*/,
+                          child: TextFormField(
+                            controller: _nameController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Глубина забоя, м',
+                              hintText: 'Введите глубину интервала'
+                            ),
+                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                            validator: (value) {
+                              RegExp regex = RegExp(r"^[+-]?[0-9]{1,2}([,.][0-9]{1,2})?$");
+                              if (!regex.hasMatch(value!))
+                                return 'Введите правильное значение';
+                              else
+                                return null;
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1 /*or any integer value above 0 (optional)*/,
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              widget.line_name,
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    validator: (value) {
-                      RegExp regex = RegExp(r"^[+-]?[0-9]{1,2}([,.][0-9]{1,2})?$");
-                      if (!regex.hasMatch(value!))
-                        return 'Введите правильное значение';
-                      else
-                        return null;
-                    },
                   ),
                 ),
               ),
@@ -181,7 +206,7 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                 ),
               ),
               SizedBox(
-                height: 120,
+                height: 200,
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -192,12 +217,12 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                       hintText: 'Введите описание интервала'
                     ),
                     keyboardType: TextInputType.multiline,
-                    maxLines: 4,
+                    maxLines: 5,
                   ),
                 ),
               ),
               SizedBox(
-                height: 120,
+                height: 100,
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: TextField(
@@ -268,8 +293,6 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                           String comment = _commentController.text;
                           String _material = material ?? "";
 
-                          print("RREEE: ${_previousDepth}");
-
                           name = name.replaceAll(",", ".");
 
                           if (double.parse(name) <= _previousDepth!) {
@@ -289,7 +312,7 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                           continueCallBack() => {
                             Navigator.pop(context),
                             Navigator.push(
-                              context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID,))),
+                              context, MaterialPageRoute(builder: (_) => WellIndexPage(taskID: widget.taskID, wellID: widget.wellID, short_name: widget.short_name, line_name: widget.line_name,))),
                           };
                           BlurryDialog alert = BlurryDialog("Сообщение", "Интервал успешно добавлен!", continueCallBack);
                           showDialog(
@@ -301,18 +324,18 @@ class LayerCreatePageState extends State<LayerCreatePage> {
                         },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      child: ElevatedButton(
-                        child: backBtn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    //   child: ElevatedButton(
+                    //     child: backBtn,
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.green,
+                    //     ),
+                    //     onPressed: () {
+                    //       Navigator.pop(context);
+                    //     },
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

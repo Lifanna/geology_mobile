@@ -67,4 +67,22 @@ class License {
 
     return license;
   }
+
+  Map<String, dynamic> toDatabaseJson(License license) {
+    var databaseJson = {
+      'short_name': license.short_name,
+      'name': license.name,
+      'created_at': license.created_at,
+      'updated_at': license.updated_at
+    };
+
+    return databaseJson;
+  }
+
+  factory License.fromDatabaseJson(Map<dynamic, dynamic> data) {
+    License license = License();
+    license.id = data['license_id'];
+
+    return license;
+  }
 }
