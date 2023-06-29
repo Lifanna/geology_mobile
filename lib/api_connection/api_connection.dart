@@ -9,8 +9,8 @@ import 'package:flutter_application_1/services/storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/models/api_models.dart';
 
-// final _base = "http://192.168.2.10";
-final _base = "http://192.168.1.62:8000";
+final _base = "http://192.168.2.10";
+// final _base = "http://192.168.1.62:8000";
 // final _base = "http://192.168.188.102:8000";
 // final _base = "https://www.homeowner.net.ru";
 // final _base = "https://geolog.space";

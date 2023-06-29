@@ -179,13 +179,6 @@ class TaskPageState extends State<TaskPage> {
                               flex: 1,
                               child: Text(_wells[index].description),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: Container(
-                                alignment: Alignment.centerRight,
-                                child: _wells[index].layer_comment.replaceAll(" ", "") != "" ? Icon(Icons.comment) : Text(""),
-                              ),
-                            ),
                           ],
                         ),
                         onTap: () {

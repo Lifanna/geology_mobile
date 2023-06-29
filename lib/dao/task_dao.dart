@@ -135,12 +135,10 @@ class TaskDao {
     result = await db.rawQuery("""
       SELECT 
         mw.id as well_id, mw.description as well_description, 
-        mw.name as well_name, ml.comment as layer_comment 
+        mw.name as well_name 
       FROM main_welltask mwt
       JOIN main_well mw ON
       mw.id = mwt.well_id
-      LEFT JOIN main_layer ml ON
-      ml.well_id = mw.id
       JOIN main_task mt ON
       mt.id = mwt.task_id
       WHERE mwt.task_id = ${taskId}

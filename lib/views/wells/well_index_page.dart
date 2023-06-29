@@ -260,12 +260,19 @@ class WellIndexPageState extends State<WellIndexPage> {
                                               textAlign: TextAlign.left,
                                             ),
                                           ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Container(
+                                              alignment: Alignment.centerRight,
+                                              child: _layers[index].comment != "" ? Icon(Icons.comment) : Text(""),
+                                            ),
+                                          ),
                                           if (_layers[index].sampleObtained == true) Expanded(
                                             flex: 1,
                                             child: Container(
                                               alignment: Alignment.centerRight,
                                               child: Icon(Icons.check),
-                                          ),
+                                            ),
                                           ),
                                         ],
                                       ),
